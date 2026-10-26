@@ -1,0 +1,11 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+.DS_Store
+.vscode/
+*.code-workspace
+AGENTS.md
+dashboard-compact-proof.png
+ranking-analytics-fixed.png
+.vercel/
