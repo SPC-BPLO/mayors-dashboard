@@ -269,7 +269,7 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
     query<{ label: string; value: number }>(`WITH bounds AS (
       SELECT (NOW() AT TIME ZONE 'Asia/Manila')::date AS today
     ), days AS (
-      SELECT generate_series(today - INTERVAL '6 days',today,INTERVAL '1 day')::date AS collection_day
+      SELECT generate_series(today - INTERVAL '29 days',today,INTERVAL '1 day')::date AS collection_day
       FROM bounds
     ), payments AS (
       SELECT amount,status,CASE WHEN payment_date ~ '^\\d{4}-\\d{2}-\\d{2}$' THEN payment_date::date END AS paid_on
@@ -303,6 +303,10 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
   const averagePayment = count(summary.settled_month) > 0 ? collected / count(summary.settled_month) : 0;
   const averageDailyReceipts = count(summary.receipts_month) / elapsedDays;
   const dailyCollection = number(trendRows[trendRows.length - 1]?.value);
+  const collectionPeriods = ([7, 14, 21, 30] as const).map((days) => {
+    const value = trendRows.slice(-days).reduce((total, row) => total + number(row.value), 0);
+    return { days, value, display: formatMoney(value) };
+  });
 
   return {
     id: "cto",
@@ -332,10 +336,11 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
       ] },
     ],
     trend: {
-      title: "Daily collections — last 7 days",
+      title: "Daily collections",
       labels: trendRows.map((row) => row.label),
       values: trendRows.map((row) => Number((number(row.value) / 1_000).toFixed(1))),
       valueSuffix: "K",
+      periodTotals: collectionPeriods,
     },
     distribution: {
       title: "Average daily ticket activity",

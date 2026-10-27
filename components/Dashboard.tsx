@@ -19,7 +19,13 @@ function MetricValue({ value }: { value: string }) {
   return <>{match[1]}<span>{match[2]}</span></>;
 }
 
+function formatTrendValue(value: number, suffix?: string) {
+  if (suffix === "K") return `₱${value.toLocaleString("en-PH", { maximumFractionDigits: 1 })}K`;
+  return `${value.toLocaleString()}${suffix ?? ""}`;
+}
+
 function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
+  const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
   const width = 640;
   const height = 230;
   const left = 28;
@@ -46,15 +52,37 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
         })}
         <polygon points={area} className="chartArea" />
         <polyline points={polyline} className="chartLine" />
-        {points.map(({ x, y, value }, index) => (
-          <g key={`${trend.labels[index]}-${value}`}>
+        {points.map(({ x, y, value }, index) => {
+          const showAxisLabel = trend.labels.length <= 7 || index === trend.labels.length - 1 || index % Math.ceil(trend.labels.length / 6) === 0;
+          const tooltipX = Math.min(Math.max(x, 74), width - 74);
+          const tooltipY = Math.max(y - 56, 4);
+          return (
+          <g
+            key={`${trend.labels[index]}-${value}`}
+            onBlur={() => setHoveredPoint(null)}
+            onFocus={() => setHoveredPoint(index)}
+            onMouseEnter={() => setHoveredPoint(index)}
+            onMouseLeave={() => setHoveredPoint(null)}
+            tabIndex={trend.periodTotals ? 0 : undefined}
+          >
+            <title>{trend.labels[index]}: {formatTrendValue(value, trend.valueSuffix)}</title>
             <circle cx={x} cy={y} r="5" className="chartPoint" />
-            <text x={x} y={Math.max(y - 12, 13)} textAnchor="middle" className="chartValue">
-              {value.toLocaleString()}{trend.valueSuffix ?? ""}
-            </text>
-            <text x={x} y={height - 14} textAnchor="middle" className="chartLabel">{trend.labels[index]}</text>
+            <circle cx={x} cy={y} r="14" className="chartHitArea" />
+            {!trend.periodTotals && (
+              <text x={x} y={Math.max(y - 12, 13)} textAnchor="middle" className="chartValue">
+                {formatTrendValue(value, trend.valueSuffix)}
+              </text>
+            )}
+            {showAxisLabel && <text x={x} y={height - 14} textAnchor="middle" className="chartLabel">{trend.labels[index]}</text>}
+            {hoveredPoint === index && (
+              <g className="chartTooltip" pointerEvents="none">
+                <rect x={tooltipX - 65} y={tooltipY} width="130" height="42" rx="9" />
+                <text x={tooltipX} y={tooltipY + 15} textAnchor="middle" className="chartTooltipDate">{trend.labels[index]}</text>
+                <text x={tooltipX} y={tooltipY + 32} textAnchor="middle" className="chartTooltipValue">{formatTrendValue(value, trend.valueSuffix)}</text>
+              </g>
+            )}
           </g>
-        ))}
+        )})}
       </svg>
     </div>
   );
@@ -117,6 +145,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
   const [departments, setDepartments] = useState<DepartmentDashboard[]>(initialData?.departments ?? emptyDepartments);
   const [selectedDepartment, setSelectedDepartment] = useState<DepartmentId>("bplo");
   const [selectedMetric, setSelectedMetric] = useState<DepartmentDashboard["metrics"][number] | null>(null);
+  const [collectionPeriod, setCollectionPeriod] = useState<7 | 14 | 21 | 30>(7);
   const [dataState, setDataState] = useState<"loading" | "ready" | "error">(initialData ? "ready" : "loading");
 
   useEffect(() => {
@@ -144,8 +173,17 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
 
   const department = useMemo(
     () => departments.find((item) => item.id === selectedDepartment) ?? departments[0],
-    [selectedDepartment],
+    [departments, selectedDepartment],
   );
+  const displayedTrend = useMemo(() => {
+    if (!department.trend.periodTotals) return department.trend;
+    return {
+      ...department.trend,
+      title: `Daily collections — last ${collectionPeriod} days`,
+      labels: department.trend.labels.slice(-collectionPeriod),
+      values: department.trend.values.slice(-collectionPeriod),
+    };
+  }, [collectionPeriod, department.trend]);
 
   return (
     <div className="reportDashboard">
@@ -190,7 +228,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
           </div>
         )}
 
-        <section className={`reportMetrics metrics-${department.metrics.length}`} aria-label={`${department.short} summary statistics`}>
+        <section className={`reportMetrics metrics-${department.metrics.length}${department.id === "cto" ? " compactMetrics" : ""}`} aria-label={`${department.short} summary statistics`}>
           {department.metrics.map((metric) => (
             <article
               className={metric.details ? "interactiveMetric" : undefined}
@@ -213,11 +251,26 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
 
         <section className="analyticsGrid" aria-label={`${department.short} analytics`}>
           <article className="analyticsPanel trendPanel">
-            <div className="panelHeading">
-              <h2>{department.trend.title}</h2>
-              <span>6 months</span>
+            <div className={`panelHeading${department.trend.periodTotals ? " collectionHeading" : ""}`}>
+              <h2>{displayedTrend.title}</h2>
+              {department.trend.periodTotals ? (
+                <div className="collectionPeriods" aria-label="Collection totals by period">
+                  {department.trend.periodTotals.map((period) => (
+                    <button
+                      aria-pressed={collectionPeriod === period.days}
+                      className={collectionPeriod === period.days ? "active" : ""}
+                      key={period.days}
+                      onClick={() => setCollectionPeriod(period.days)}
+                      type="button"
+                    >
+                      <span>{period.days} days</span>
+                      <strong>{period.display}</strong>
+                    </button>
+                  ))}
+                </div>
+              ) : <span>6 months</span>}
             </div>
-            <TrendChart trend={department.trend} />
+            <TrendChart trend={displayedTrend} />
           </article>
 
           <article className="analyticsPanel distributionPanel">

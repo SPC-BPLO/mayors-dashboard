@@ -15,6 +15,11 @@ export type DepartmentDashboard = {
     labels: string[];
     values: number[];
     valueSuffix?: string;
+    periodTotals?: Array<{
+      days: 7 | 14 | 21 | 30;
+      value: number;
+      display: string;
+    }>;
   };
   distribution: {
     title: string;
