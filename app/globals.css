@@ -200,3 +200,9 @@ footer{font-size:11px}
   .trendChart svg{height:250px;min-height:250px;max-height:none}
   .distributionLayout{height:auto;min-height:250px}
 }
+
+/* Keep scrolling available while removing visual scrollbar clutter. */
+html:has(.reportDashboard),body:has(.reportDashboard),.reportDashboard *{scrollbar-width:none;-ms-overflow-style:none}
+html:has(.reportDashboard)::-webkit-scrollbar,body:has(.reportDashboard)::-webkit-scrollbar,.reportDashboard *::-webkit-scrollbar{width:0;height:0;display:none}
+html,body{scrollbar-width:none;-ms-overflow-style:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
