@@ -1,143 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { DepartmentDashboard, DepartmentId, MayorDashboardResponse } from "@/lib/dashboard-types";
 
-type DepartmentId = "bplo" | "ctmo" | "cto";
-
-type DepartmentDashboard = {
-  id: DepartmentId;
-  short: string;
-  name: string;
-  reportTitle: string;
-  metrics: Array<{ label: string; value: string }>;
-  trend: {
-    title: string;
-    labels: string[];
-    values: number[];
-    valueSuffix?: string;
-  };
-  distribution: {
-    title: string;
-    centerValue: string;
-    centerLabel: string;
-    items: Array<{ label: string; value: number; display: string }>;
-  };
-  ranking: {
-    title: string;
-    items: Array<{ label: string; value: number; display: string }>;
-  };
-};
-
-const departments: DepartmentDashboard[] = [
-  {
-    id: "bplo",
-    short: "BPLO",
-    name: "Franchise",
-    reportTitle: "Franchise records",
-    metrics: [
-      { label: "Active franchises", value: "6,214" },
-      { label: "Expiring in 30 days", value: "112" },
-      { label: "MTOPs due for revocation", value: "34" },
-      { label: "MTAP slots available", value: "27" },
-    ],
-    trend: {
-      title: "Active franchise trend",
-      labels: ["May", "Jun", "Jul", "Aug", "Sep", "Oct"],
-      values: [5780, 5856, 5942, 6028, 6110, 6214],
-    },
-    distribution: {
-      title: "Franchise status",
-      centerValue: "6,544",
-      centerLabel: "records",
-      items: [
-        { label: "Active", value: 6214, display: "6,214" },
-        { label: "Expiring soon", value: 112, display: "112" },
-        { label: "Inactive", value: 218, display: "218" },
-      ],
-    },
-    ranking: {
-      title: "Key franchise records",
-      items: [
-        { label: "Renewals completed", value: 1248, display: "1,248" },
-        { label: "New applications", value: 384, display: "384" },
-        { label: "Inactive records", value: 218, display: "218" },
-        { label: "MTOPs already revoked", value: 12, display: "12" },
-      ],
-    },
-  },
-  {
-    id: "ctmo",
-    short: "CTMO",
-    name: "Traffic Violations",
-    reportTitle: "Traffic violation records",
-    metrics: [
-      { label: "Violations recorded", value: "3,482" },
-      { label: "Tickets settled", value: "2,914" },
-      { label: "Repeat offenders", value: "147" },
-    ],
-    trend: {
-      title: "Monthly violation trend",
-      labels: ["May", "Jun", "Jul", "Aug", "Sep", "Oct"],
-      values: [2740, 2915, 3078, 3240, 3368, 3482],
-    },
-    distribution: {
-      title: "Ticket resolution",
-      centerValue: "3,482",
-      centerLabel: "tickets",
-      items: [
-        { label: "Settled", value: 2914, display: "2,914" },
-        { label: "Unresolved", value: 568, display: "568" },
-      ],
-    },
-    ranking: {
-      title: "Leading violation locations",
-      items: [
-        { label: "Public Market district", value: 486, display: "486" },
-        { label: "Maharlika Highway", value: 392, display: "392" },
-        { label: "City proper", value: 318, display: "318" },
-        { label: "All remaining city locations", value: 2286, display: "2,286" },
-      ],
-    },
-  },
-  {
-    id: "cto",
-    short: "CTO",
-    name: "Finance–Cashier",
-    reportTitle: "Income and collections",
-    metrics: [
-      { label: "Collected this year", value: "₱1.48B" },
-      { label: "Still needed", value: "₱121.6M" },
-      { label: "Collected in October", value: "₱154M" },
-      { label: "Collected today", value: "₱4.8M" },
-    ],
-    trend: {
-      title: "Monthly collection trend",
-      labels: ["May", "Jun", "Jul", "Aug", "Sep", "Oct"],
-      values: [112, 126, 137, 143, 149, 154],
-      valueSuffix: "M",
-    },
-    distribution: {
-      title: "Collection sources",
-      centerValue: "₱1.48B",
-      centerLabel: "collected",
-      items: [
-        { label: "Business taxes", value: 38, display: "₱562.4M" },
-        { label: "Real property tax", value: 27, display: "₱399.6M" },
-        { label: "Fees and charges", value: 18, display: "₱266.4M" },
-        { label: "Traffic and franchise", value: 11, display: "₱162.8M" },
-        { label: "Other income", value: 6, display: "₱88.8M" },
-      ],
-    },
-    ranking: {
-      title: "Largest collection sources",
-      items: [
-        { label: "Business taxes", value: 562.4, display: "₱562.4M" },
-        { label: "Real property tax", value: 399.6, display: "₱399.6M" },
-        { label: "Fees and charges", value: 266.4, display: "₱266.4M" },
-        { label: "Traffic and franchise", value: 162.8, display: "₱162.8M" },
-      ],
-    },
-  },
+const monthLabels = ["—", "—", "—", "—", "—", "—"];
+const emptyDepartments: DepartmentDashboard[] = [
+  { id: "bplo", short: "BPLO", name: "Franchise", reportTitle: "Franchise records", metrics: ["Active franchises", "Expiring in 30 days", "MTOPs due for revocation", "MTOP slots available"].map((label) => ({ label, value: "—" })), trend: { title: "Active franchise trend", labels: monthLabels, values: [0, 0, 0, 0, 0, 0] }, distribution: { title: "Franchise status", centerValue: "—", centerLabel: "records", items: [] }, ranking: { title: "Key franchise records", items: [] } },
+  { id: "ctmo", short: "CTMO", name: "Traffic Violations", reportTitle: "Traffic violation records", metrics: ["Violations recorded", "Tickets settled", "Repeat offenders"].map((label) => ({ label, value: "—" })), trend: { title: "Monthly violation trend", labels: monthLabels, values: [0, 0, 0, 0, 0, 0] }, distribution: { title: "Ticket resolution", centerValue: "—", centerLabel: "tickets", items: [] }, ranking: { title: "Most recorded violations", items: [] } },
+  { id: "cto", short: "CTO", name: "Finance–Cashier", reportTitle: "Daily violation-fee activity", metrics: ["Average daily collection", "Average daily settled tickets", "Average daily unsettled tickets", "Daily collection"].map((label) => ({ label, value: "—" })), trend: { title: "Daily collections — last 7 days", labels: monthLabels, values: [0, 0, 0, 0, 0, 0], valueSuffix: "K" }, distribution: { title: "Average daily ticket activity", centerValue: "—", centerLabel: "tickets/day", items: [] }, ranking: { title: "Average daily collections by category", items: [] } },
 ];
 
 const chartColors = ["#147d64", "#ef6b3a", "#f2a7b8", "#9dcfb9", "#dfe9e3"];
@@ -195,7 +65,7 @@ function DistributionChart({ distribution }: { distribution: DepartmentDashboard
   let cursor = 0;
   const stops = distribution.items.map((item, index) => {
     const start = cursor;
-    cursor += (item.value / total) * 100;
+    cursor += total > 0 ? (item.value / total) * 100 : 0;
     return `${chartColors[index]} ${start}% ${cursor}%`;
   });
 
@@ -205,7 +75,7 @@ function DistributionChart({ distribution }: { distribution: DepartmentDashboard
         <span
           aria-hidden="true"
           className="donutChartRing"
-          style={{ background: `conic-gradient(${stops.join(", ")})` }}
+          style={{ background: stops.length && total > 0 ? `conic-gradient(${stops.join(", ")})` : "rgba(20,125,100,.12)" }}
         />
         <div>
           <strong>{distribution.centerValue}</strong>
@@ -226,7 +96,7 @@ function DistributionChart({ distribution }: { distribution: DepartmentDashboard
 }
 
 function RankingBars({ ranking }: { ranking: DepartmentDashboard["ranking"] }) {
-  const maximum = Math.max(...ranking.items.map((item) => item.value));
+  const maximum = Math.max(...ranking.items.map((item) => item.value), 1);
 
   return (
     <div className="rankingBars">
@@ -243,8 +113,35 @@ function RankingBars({ ranking }: { ranking: DepartmentDashboard["ranking"] }) {
   );
 }
 
-export function Dashboard() {
+export function Dashboard({ initialData }: { initialData?: MayorDashboardResponse }) {
+  const [departments, setDepartments] = useState<DepartmentDashboard[]>(initialData?.departments ?? emptyDepartments);
   const [selectedDepartment, setSelectedDepartment] = useState<DepartmentId>("bplo");
+  const [selectedMetric, setSelectedMetric] = useState<DepartmentDashboard["metrics"][number] | null>(null);
+  const [dataState, setDataState] = useState<"loading" | "ready" | "error">(initialData ? "ready" : "loading");
+
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      try {
+        const response = await fetch("/api/dashboard", { cache: "no-store" });
+        if (!response.ok) throw new Error("Live data request failed");
+        const result = (await response.json()) as MayorDashboardResponse;
+        if (active) {
+          setDepartments(result.departments);
+          setDataState("ready");
+        }
+      } catch {
+        if (active) setDataState("error");
+      }
+    };
+    if (!initialData) load();
+    const refresh = window.setInterval(load, 60_000);
+    return () => {
+      active = false;
+      window.clearInterval(refresh);
+    };
+  }, [initialData]);
+
   const department = useMemo(
     () => departments.find((item) => item.id === selectedDepartment) ?? departments[0],
     [selectedDepartment],
@@ -266,7 +163,10 @@ export function Dashboard() {
             aria-selected={selectedDepartment === item.id}
             className={selectedDepartment === item.id ? "active" : ""}
             key={item.id}
-            onClick={() => setSelectedDepartment(item.id)}
+            onClick={() => {
+              setSelectedMetric(null);
+              setSelectedDepartment(item.id);
+            }}
             role="tab"
             type="button"
           >
@@ -284,9 +184,27 @@ export function Dashboard() {
           </div>
         </div>
 
+        {dataState !== "ready" && (
+          <div className={`liveDataNotice ${dataState}`} role="status">
+            {dataState === "loading" ? "Loading live departmental data…" : "Live data unavailable. No demonstration values are being shown."}
+          </div>
+        )}
+
         <section className={`reportMetrics metrics-${department.metrics.length}`} aria-label={`${department.short} summary statistics`}>
           {department.metrics.map((metric) => (
-            <article key={metric.label}>
+            <article
+              className={metric.details ? "interactiveMetric" : undefined}
+              key={metric.label}
+              onClick={() => metric.details && setSelectedMetric(metric)}
+              onKeyDown={(event) => {
+                if (metric.details && (event.key === "Enter" || event.key === " ")) {
+                  event.preventDefault();
+                  setSelectedMetric(metric);
+                }
+              }}
+              role={metric.details ? "button" : undefined}
+              tabIndex={metric.details ? 0 : undefined}
+            >
               <strong><MetricValue value={metric.value} /></strong>
               <span>{metric.label}</span>
             </article>
@@ -313,6 +231,25 @@ export function Dashboard() {
           </article>
         </section>
       </main>
+
+      {selectedMetric?.details && (
+        <div className="metricOverlay" onMouseDown={(event) => event.target === event.currentTarget && setSelectedMetric(null)}>
+          <section aria-labelledby="metric-dialog-title" aria-modal="true" className="metricDialog" role="dialog">
+            <button aria-label="Close details" className="metricDialogClose" onClick={() => setSelectedMetric(null)} type="button">×</button>
+            <span>CTO Finance–Cashier</span>
+            <h2 id="metric-dialog-title">{selectedMetric.label}</h2>
+            <strong><MetricValue value={selectedMetric.value} /></strong>
+            <div className="metricDetailGrid">
+              {selectedMetric.details.map((detail) => (
+                <div key={detail.label}>
+                  <span>{detail.label}</span>
+                  <strong><MetricValue value={detail.value} /></strong>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 }
