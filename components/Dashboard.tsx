@@ -263,7 +263,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
                       onClick={() => setCollectionPeriod(period.days)}
                       type="button"
                     >
-                      <span>{period.days} days</span>
+                      <span>{period.days}-day total</span>
                       <strong>{period.display}</strong>
                     </button>
                   ))}
