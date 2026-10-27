@@ -254,20 +254,28 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
             <div className={`panelHeading${department.trend.periodTotals ? " collectionHeading" : ""}`}>
               <h2>{displayedTrend.title}</h2>
               {department.trend.periodTotals ? (
-                <div className="collectionPeriods" aria-label="Collection totals by period">
-                  {department.trend.periodTotals.map((period) => (
-                    <button
-                      aria-pressed={collectionPeriod === period.days}
-                      className={collectionPeriod === period.days ? "active" : ""}
-                      key={period.days}
-                      onClick={() => setCollectionPeriod(period.days)}
-                      type="button"
-                    >
-                      <span>{period.days}-day total</span>
-                      <strong>{period.display}</strong>
-                    </button>
-                  ))}
-                </div>
+                <>
+                  {department.trend.overallTotal && (
+                    <div className="overallCollection">
+                      <span>Overall violation fees collected</span>
+                      <strong>{department.trend.overallTotal.display}</strong>
+                    </div>
+                  )}
+                  <div className="collectionPeriods" aria-label="Collection totals by period">
+                    {department.trend.periodTotals.map((period) => (
+                      <button
+                        aria-pressed={collectionPeriod === period.days}
+                        className={collectionPeriod === period.days ? "active" : ""}
+                        key={period.days}
+                        onClick={() => setCollectionPeriod(period.days)}
+                        type="button"
+                      >
+                        <span>{period.days}-day total</span>
+                        <strong>{period.display}</strong>
+                      </button>
+                    ))}
+                  </div>
+                </>
               ) : <span>6 months</span>}
             </div>
             <TrendChart trend={displayedTrend} />

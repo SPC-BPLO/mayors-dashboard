@@ -229,6 +229,7 @@ async function ctmoDashboard(): Promise<DepartmentDashboard> {
 async function financeDashboard(): Promise<DepartmentDashboard> {
   const [summaryRows, trendRows, sourceRows] = await Promise.all([
     query<{
+      collected_overall: number;
       collected_month: number;
       collected_previous_month: number;
       settled_month: number;
@@ -255,6 +256,7 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
       GROUP BY paid_on
     )
     SELECT
+      COALESCE(SUM(amount) FILTER (WHERE status='Settled'),0)::float AS collected_overall,
       COALESCE(SUM(amount) FILTER (WHERE status='Settled' AND paid_on >= month_start AND paid_on < month_start + INTERVAL '1 month'),0)::float AS collected_month,
       COALESCE(SUM(amount) FILTER (WHERE status='Settled' AND paid_on >= month_start - INTERVAL '1 month' AND paid_on < month_start),0)::float AS collected_previous_month,
       COUNT(*) FILTER (WHERE status='Settled' AND paid_on >= month_start AND paid_on < month_start + INTERVAL '1 month')::int AS settled_month,
@@ -289,7 +291,7 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
     GROUP BY 1 ORDER BY value DESC,label LIMIT 4`),
   ]);
 
-  const summary = summaryRows[0] ?? { collected_month: 0, collected_previous_month: 0, settled_month: 0, receipts_month: 0, highest_daily_collection: 0, highest_daily_transactions: 0, active_collection_days: 0, elapsed_days: 1, cohort_settled: 0, cohort_unsettled: 0 };
+  const summary = summaryRows[0] ?? { collected_overall: 0, collected_month: 0, collected_previous_month: 0, settled_month: 0, receipts_month: 0, highest_daily_collection: 0, highest_daily_transactions: 0, active_collection_days: 0, elapsed_days: 1, cohort_settled: 0, cohort_unsettled: 0 };
   const collected = number(summary.collected_month);
   const settled = count(summary.cohort_settled);
   const unsettled = count(summary.cohort_unsettled);
@@ -340,6 +342,10 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
       labels: trendRows.map((row) => row.label),
       values: trendRows.map((row) => Number((number(row.value) / 1_000).toFixed(1))),
       valueSuffix: "K",
+      overallTotal: {
+        value: number(summary.collected_overall),
+        display: formatMoney(summary.collected_overall),
+      },
       periodTotals: collectionPeriods,
     },
     distribution: {

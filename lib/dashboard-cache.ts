@@ -11,6 +11,6 @@ export const getMayorDashboard = unstable_cache(
       await closeMayorDashboardConnection();
     }
   },
-  ["mayor-dashboard-live-v1"],
+  ["mayor-dashboard-live-v2"],
   { revalidate: 30 },
 );
