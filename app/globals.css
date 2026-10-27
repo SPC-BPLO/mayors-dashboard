@@ -188,3 +188,15 @@ footer{font-size:11px}
   .rankingRow{gap:3px}
   .rankingTrack{height:7px}
 }
+
+/* Allow the complete dashboard to flow naturally in the browser. */
+@media(min-width:1001px){
+  html:has(.reportDashboard),body:has(.reportDashboard){height:auto;min-height:100%;overflow-x:hidden;overflow-y:auto}
+  .reportDashboard{height:auto;min-height:100vh;overflow:visible}
+  .departmentReport{height:auto;min-height:calc(100vh - 136px);overflow:visible;padding-bottom:48px}
+  .analyticsGrid{flex:none;grid-template-rows:auto auto}
+  .trendPanel,.distributionPanel{overflow:visible}
+  .trendChart{height:auto}
+  .trendChart svg{height:250px;min-height:250px;max-height:none}
+  .distributionLayout{height:auto;min-height:250px}
+}
