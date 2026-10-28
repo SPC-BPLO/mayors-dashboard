@@ -246,3 +246,22 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .reportMetrics article,.analyticsPanel{border-radius:14px;box-shadow:0 5px 16px rgba(28,70,59,.065)}
 }
 @media(max-width:380px){.departmentReport{padding-right:14px;padding-left:14px}}
+
+/* Stronger flat-glass direction: blur and transparency without elevation. */
+.reportDashboard{background:linear-gradient(135deg,#dfeeea 0%,#edf3f3 52%,#f1eee5 100%)}
+.reportDashboard::before,.reportDashboard::after{display:none}
+.reportTopbar,.departmentSwitcher{background:rgba(250,252,251,.52);border-color:rgba(73,105,96,.12);box-shadow:none}
+.departmentSwitcher button{border:1px solid transparent;border-radius:8px;box-shadow:none;transform:none}
+.departmentSwitcher button:hover{background:rgba(255,255,255,.38);box-shadow:none;transform:none}
+.departmentSwitcher button.active{background:rgba(218,239,232,.58);border-color:rgba(20,125,100,.12);box-shadow:none}
+.reportMetrics article,.analyticsPanel{background:rgba(255,255,255,.44);border:1px solid rgba(73,105,96,.15);border-radius:12px;box-shadow:none}
+.reportMetrics article:hover{background:rgba(255,255,255,.56);box-shadow:none;transform:none}
+.overallCollection{background:rgba(201,231,222,.46);border:1px solid rgba(20,125,100,.14);border-radius:9px;box-shadow:none}
+.collectionPeriods button{background:rgba(255,255,255,.38);border-color:rgba(73,105,96,.12);border-radius:8px;box-shadow:none;transform:none}
+.collectionPeriods button:hover,.collectionPeriods button:focus-visible{background:rgba(255,255,255,.54);box-shadow:none;transform:none}
+.collectionPeriods button.active{background:rgba(190,229,216,.62);border-color:rgba(20,125,100,.25);box-shadow:none}
+.donutChart{box-shadow:none}.donutChart>div{background:rgba(255,255,255,.62);border-color:rgba(73,105,96,.12);box-shadow:none}
+.rankingTrack{background:rgba(72,113,100,.1);box-shadow:none}
+.metricDialog{background:rgba(244,249,247,.94);border-color:rgba(73,105,96,.14);border-radius:18px;box-shadow:0 12px 32px rgba(18,54,50,.14)}
+.metricDetailGrid>div{background:rgba(255,255,255,.5);border-color:rgba(73,105,96,.12);border-radius:10px;box-shadow:none}
+@media(max-width:660px){.reportMetrics article,.analyticsPanel{border-radius:12px;box-shadow:none}}
