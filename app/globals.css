@@ -190,16 +190,35 @@ footer{font-size:11px}
   .rankingTrack{height:7px}
 }
 
-/* Allow the complete dashboard to flow naturally in the browser. */
-@media(min-width:1001px){
+/* Single-screen executive presentation on standard desktop displays. */
+@media(min-width:1001px) and (min-height:700px){
+  html:has(.reportDashboard),body:has(.reportDashboard){height:100%;min-height:0;overflow:hidden}
+  .reportDashboard{height:100dvh;min-height:0;overflow:hidden}
+  .reportTopbar{min-height:62px;padding-top:9px;padding-bottom:9px}
+  .departmentSwitcher button{padding-top:7px;padding-bottom:6px}
+  .departmentReport{display:flex;height:calc(100dvh - 116px);min-height:0;overflow:hidden;padding-top:13px;padding-bottom:11px}
+  .reportHeading{margin-bottom:9px}.reportHeading h1{font-size:clamp(26px,2.25vw,36px)}
+  .reportMetrics{gap:10px}.reportMetrics article{min-height:78px;padding:11px 17px}.reportMetrics article>strong{font-size:clamp(25px,2vw,34px)}
+  .compactMetrics article{min-height:74px;padding-top:10px;padding-bottom:10px}
+  .analyticsGrid{flex:1;min-height:0;grid-template-rows:minmax(0,1fr) auto;gap:10px;margin-top:10px}
+  .analyticsPanel{padding:13px 16px}.trendPanel,.distributionPanel{overflow:hidden}
+  .panelHeading h2{font-size:16px}.collectionHeading{gap:6px}
+  .overallCollection{padding:6px 10px}.overallCollection span{font-size:8px}.overallCollection strong{font-size:19px}
+  .collectionPeriods{gap:6px}.collectionPeriods button{padding:6px 8px;border-radius:10px}.collectionPeriods span{font-size:8px}.collectionPeriods strong{font-size:14px}
+  .trendChart{height:calc(100% - 25px);margin-top:4px}.collectionHeading+.trendChart{height:calc(100% - 112px)}
+  .trendChart svg{height:100%;min-height:118px;max-height:none}
+  .distributionLayout{height:calc(100% - 24px);min-height:0;margin-top:4px}.donutChart{width:min(138px,10vw)}
+  .rankingPanel{padding:9px 14px}.rankingBars{gap:5px 28px;margin-top:6px}.rankingRow{gap:3px}.rankingTrack{height:6px}
+}
+
+/* Short desktop windows retain scrolling instead of shrinking text too far. */
+@media(min-width:1001px) and (max-height:699px){
   html:has(.reportDashboard),body:has(.reportDashboard){height:auto;min-height:100%;overflow-x:hidden;overflow-y:auto}
   .reportDashboard{height:auto;min-height:100vh;overflow:visible}
-  .departmentReport{height:auto;min-height:calc(100vh - 136px);overflow:visible;padding-bottom:48px}
+  .departmentReport{height:auto;min-height:calc(100vh - 136px);overflow:visible;padding-bottom:40px}
   .analyticsGrid{flex:none;grid-template-rows:auto auto}
-  .trendPanel,.distributionPanel{overflow:visible}
-  .trendChart{height:auto}
-  .trendChart svg{height:250px;min-height:250px;max-height:none}
-  .distributionLayout{height:auto;min-height:250px}
+  .trendPanel,.distributionPanel{overflow:visible}.trendChart{height:auto}.trendChart svg{height:230px;min-height:230px;max-height:none}
+  .distributionLayout{height:auto;min-height:230px}
 }
 
 /* Keep scrolling available while removing visual scrollbar clutter. */
@@ -207,3 +226,23 @@ html:has(.reportDashboard),body:has(.reportDashboard),.reportDashboard *{scrollb
 html:has(.reportDashboard)::-webkit-scrollbar,body:has(.reportDashboard)::-webkit-scrollbar,.reportDashboard *::-webkit-scrollbar{width:0;height:0;display:none}
 html,body{scrollbar-width:none;-ms-overflow-style:none}
 html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
+
+/* Flat glass system: translucent surfaces without heavy gloss or elevation. */
+.reportTopbar,.departmentSwitcher{background:rgba(248,252,251,.6);border-color:rgba(255,255,255,.76);box-shadow:0 1px 0 rgba(26,74,63,.07);backdrop-filter:blur(22px) saturate(125%);-webkit-backdrop-filter:blur(22px) saturate(125%)}
+.departmentSwitcher button:hover{background:rgba(255,255,255,.46);box-shadow:none}.departmentSwitcher button.active{background:rgba(231,246,241,.7);border-color:rgba(255,255,255,.82);box-shadow:inset 0 0 0 1px rgba(20,125,100,.06)}
+.reportMetrics article,.analyticsPanel{background:rgba(255,255,255,.5);border-color:rgba(255,255,255,.82);box-shadow:0 7px 22px rgba(28,70,59,.075);backdrop-filter:blur(24px) saturate(125%);-webkit-backdrop-filter:blur(24px) saturate(125%)}
+.reportMetrics article::before,.analyticsPanel::before{display:none}.reportMetrics article:hover{background:rgba(255,255,255,.62);box-shadow:0 9px 25px rgba(28,70,59,.09)}
+.overallCollection{background:rgba(224,244,237,.68);border-color:rgba(255,255,255,.84);box-shadow:0 4px 14px rgba(20,125,100,.08)}
+.collectionPeriods button{background:rgba(255,255,255,.5);box-shadow:none}.collectionPeriods button.active{background:rgba(211,240,231,.78);box-shadow:inset 0 0 0 1px rgba(20,125,100,.08)}
+.metricDialog{background:rgba(245,251,249,.92);box-shadow:0 18px 52px rgba(18,54,50,.18)}
+
+/* More breathing room at the sides on phones. */
+@media(max-width:660px){
+  .reportTopbar{padding-right:20px;padding-left:20px}
+  .departmentSwitcher{gap:5px;padding-right:12px;padding-left:12px}
+  .departmentReport{padding-right:20px;padding-left:20px}
+  .reportMetrics,.reportMetrics.metrics-3{gap:10px}
+  .analyticsGrid{gap:10px;margin-top:10px}
+  .reportMetrics article,.analyticsPanel{border-radius:14px;box-shadow:0 5px 16px rgba(28,70,59,.065)}
+}
+@media(max-width:380px){.departmentReport{padding-right:14px;padding-left:14px}}
