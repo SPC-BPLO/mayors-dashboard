@@ -283,6 +283,7 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
       date_trunc('month', today) AS current_month
       FROM payments,bounds
       WHERE status='Settled'
+      GROUP BY today
     ), months AS (
       SELECT generate_series(first_month,current_month,INTERVAL '1 month')::date AS collection_month
       FROM range
