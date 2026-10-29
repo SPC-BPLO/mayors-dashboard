@@ -465,3 +465,52 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .mayorGreeting{padding-left:9px}
   .mayorGreeting strong{font-size:14px}
 }
+
+/* Smoother department switching and precise active accents. */
+.departmentSwitcher button{
+  transition:color 240ms ease,background-color 240ms ease,transform 240ms cubic-bezier(.2,.72,.2,1);
+}
+.departmentSwitcher button::before{
+  position:absolute;
+  right:28px;
+  bottom:0;
+  left:18px;
+  z-index:2;
+  height:3px;
+  background:#16876a;
+  border-radius:3px 3px 0 0;
+  content:"";
+  transform:scaleX(0);
+  transform-origin:left center;
+  transition:transform 280ms cubic-bezier(.2,.76,.24,1);
+}
+.departmentSwitcher button.active::before{transform:scaleX(1)}
+.departmentReport{animation-name:departmentSlideReveal;animation-duration:460ms;animation-timing-function:cubic-bezier(.2,.76,.24,1)}
+@keyframes departmentSlideReveal{
+  from{opacity:.2;transform:translateX(10px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+.collectionPeriods button{overflow:hidden;transition:color 220ms ease,background-color 220ms ease,border-color 220ms ease}
+.collectionPeriods button::before{
+  position:absolute;
+  right:12px;
+  bottom:0;
+  left:12px;
+  height:4px;
+  background:#16876a;
+  border-radius:4px 4px 0 0;
+  content:"";
+  transform:scaleX(0);
+  transform-origin:center;
+  transition:transform 280ms cubic-bezier(.2,.76,.24,1);
+}
+.collectionPeriods button.active{box-shadow:none}
+.collectionPeriods button.active::before{transform:scaleX(1)}
+@media(max-width:660px){
+  .departmentSwitcher button::before{right:10px;left:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .departmentSwitcher button,.departmentSwitcher button::before,.collectionPeriods button,.collectionPeriods button::before{transition:none}
+  .departmentReport{animation:none}
+}
