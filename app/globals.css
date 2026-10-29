@@ -303,3 +303,102 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .collectionPeriods span{font-size:10px}
   .collectionPeriods strong{font-size:18px}
 }
+
+/* Touch-first mobile dashboard. */
+@media(max-width:660px){
+  .reportDashboard{min-width:0;padding-bottom:env(safe-area-inset-bottom)}
+  .reportTopbar{
+    min-height:72px;
+    padding:14px max(18px,env(safe-area-inset-right)) 13px max(18px,env(safe-area-inset-left));
+  }
+  .reportBrand{gap:1px}
+  .reportBrand span{font-size:10px;letter-spacing:.15em}
+  .reportBrand strong{font-size:23px;line-height:1.12}
+
+  .departmentSwitcher{
+    position:sticky;
+    top:0;
+    z-index:40;
+    justify-content:flex-start;
+    gap:7px;
+    overflow-x:auto;
+    padding:9px max(18px,env(safe-area-inset-right)) 0 max(18px,env(safe-area-inset-left));
+    scroll-padding-inline:18px;
+    scroll-snap-type:x proximity;
+    overscroll-behavior-x:contain;
+  }
+  .departmentSwitcher button{
+    flex:0 0 min(62vw,230px);
+    min-height:56px;
+    padding:11px 24px 10px 14px;
+    scroll-snap-align:start;
+    touch-action:manipulation;
+  }
+  .departmentSwitcher span{font-size:9px;letter-spacing:.12em}
+  .departmentSwitcher strong{font-size:13px;line-height:1.2}
+
+  .departmentReport{
+    padding:24px max(18px,env(safe-area-inset-right)) 42px max(18px,env(safe-area-inset-left));
+  }
+  .reportHeading{margin-bottom:16px}
+  .reportHeading span{font-size:10px}
+  .reportHeading h1{font-size:clamp(27px,8vw,34px);line-height:1.05}
+
+  .reportMetrics,.reportMetrics.metrics-3{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .reportMetrics article{
+    min-height:104px;
+    padding:15px;
+    border-radius:15px;
+  }
+  .reportMetrics article>strong{font-size:clamp(25px,8vw,32px)}
+  .reportMetrics article>span{margin-top:6px;font-size:9px;line-height:1.35}
+  .reportMetrics article.interactiveMetric::after{right:13px;bottom:13px;width:7px;height:7px}
+
+  .analyticsGrid{gap:12px;margin-top:12px}
+  .analyticsPanel{padding:17px;border-radius:16px}
+  .panelHeading{align-items:flex-start;gap:10px}
+  .panelHeading h2{font-size:17px;line-height:1.2}
+  .collectionHeading{gap:12px}
+  .collectionPeriods{gap:10px}
+  .collectionPeriods button{min-height:70px;padding:12px 13px;border-radius:12px;touch-action:manipulation}
+  .collectionPeriods span{font-size:10px}
+  .collectionPeriods strong{font-size:20px}
+
+  .trendChart{height:225px;margin-top:10px;overflow:hidden}
+  .trendChart svg{width:100%;height:225px;min-width:0}
+  .chartLine{stroke-width:4}
+  .chartLabel{font-size:9px}
+
+  .distributionLayout{grid-template-columns:120px minmax(0,1fr);gap:16px;margin-top:18px}
+  .donutChart{width:120px}
+  .donutChart>div{width:76px}
+  .donutChart strong{font-size:18px}
+  .distributionLegend{gap:11px}
+  .distributionLegend>div{gap:8px}
+  .distributionLegend span,.distributionLegend strong{font-size:11px}
+
+  .rankingPanel{padding-bottom:19px}
+  .rankingBars{gap:14px;margin-top:16px}
+  .rankingRow{gap:7px}
+  .rankingRow span,.rankingRow strong{font-size:11px}
+  .rankingRow span{line-height:1.25}
+  .rankingTrack{height:8px}
+
+  .metricOverlay{align-items:end;padding:12px max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+  .metricDialog{width:100%;padding:25px 18px 18px;border-radius:22px}
+  .metricDialogClose{top:14px;right:14px;width:42px;height:42px}
+  .metricDetailGrid{gap:9px;margin-top:20px}
+  .metricDetailGrid>div{min-height:76px;padding:14px}
+}
+
+@media(max-width:390px){
+  .departmentSwitcher button{flex-basis:72vw}
+  .departmentReport{padding-right:16px;padding-left:16px}
+  .reportMetrics article{min-height:98px;padding:13px}
+  .reportMetrics article>strong{font-size:25px}
+  .analyticsPanel{padding:15px}
+  .collectionPeriods{grid-template-columns:1fr 1fr}
+  .collectionPeriods button{min-height:66px;padding:10px}
+  .distributionLayout{grid-template-columns:1fr;justify-items:center}
+  .distributionLegend{width:100%}
+}
