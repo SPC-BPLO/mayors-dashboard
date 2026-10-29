@@ -103,16 +103,23 @@ async function bploDashboard(): Promise<DepartmentDashboard> {
       COUNT(*) FILTER (WHERE NOT is_archived AND renewal_due >= CURRENT_DATE AND renewal_due < CURRENT_DATE + INTERVAL '31 days')::int AS expiring,
       COUNT(DISTINCT ${mtopNumber("mtop")}) FILTER (WHERE NOT is_archived)::int AS used_mtops,
       (SELECT COUNT(*)::int FROM franchise_archive WHERE kind='revoked') AS revoked,
-      COUNT(*) FILTER (WHERE created_at >= CURRENT_DATE - INTERVAL '30 days')::int AS new_applications
+      (SELECT COUNT(DISTINCT ${mtopNumber("f.mtop")})::int
+       FROM finance_clients f
+       WHERE f.transaction_at >= (NOW() AT TIME ZONE 'Asia/Manila') - INTERVAL '30 days'
+         AND lower(COALESCE(f.data->>'transactionType','')) IN ('new franchise','new')
+         AND ${mtopNumber("f.mtop")} IS NOT NULL) AS new_applications
     FROM franchise_registry`),
     query<{ total: number }>(revocationSql),
     query<{ label: string; value: number }>(`SELECT TO_CHAR(month,'Mon') AS label,
-      COUNT(r.record_id)::int AS value
+      COUNT(DISTINCT ${mtopNumber("f.mtop")})::int AS value
     FROM generate_series(
       date_trunc('month', CURRENT_DATE) - INTERVAL '5 months',
       date_trunc('month', CURRENT_DATE), INTERVAL '1 month'
     ) month
-    LEFT JOIN franchise_registry r ON NOT r.is_archived AND r.created_at < month + INTERVAL '1 month'
+    LEFT JOIN finance_clients f ON f.transaction_at >= month
+      AND f.transaction_at < month + INTERVAL '1 month'
+      AND lower(COALESCE(f.data->>'transactionType','')) IN ('new franchise','new')
+      AND ${mtopNumber("f.mtop")} IS NOT NULL
     GROUP BY month ORDER BY month`),
     query<{ completed: number; pending: number }>(`SELECT
       COUNT(*) FILTER (WHERE lower(status)='renewed')::int AS completed,
@@ -140,7 +147,7 @@ async function bploDashboard(): Promise<DepartmentDashboard> {
       { label: "MTOP slots available", value: formatCount(available) },
     ],
     trend: {
-      title: "Active franchise trend",
+      title: "New franchise activity",
       labels: trendRows.map((row) => row.label),
       values: trendRows.map((row) => count(row.value)),
     },
@@ -158,7 +165,7 @@ async function bploDashboard(): Promise<DepartmentDashboard> {
       title: "Key franchise records",
       items: [
         { label: "Renewals completed", value: count(renewals.completed), display: formatCount(renewals.completed) },
-        { label: "New applications (30 days)", value: count(summary.new_applications), display: formatCount(summary.new_applications) },
+        { label: "New franchises recorded (30 days)", value: count(summary.new_applications), display: formatCount(summary.new_applications) },
         { label: "Pending renewals", value: count(renewals.pending), display: formatCount(renewals.pending) },
         { label: "MTOPs already revoked", value: revoked, display: formatCount(revoked) },
       ],
@@ -178,14 +185,22 @@ async function ctmoDashboard(): Promise<DepartmentDashboard> {
       FROM violations
       GROUP BY 1 HAVING COUNT(*) > 1
     ) repeat_offenders WHERE offender IS NOT NULL`),
-    query<{ label: string; value: number }>(`SELECT TO_CHAR(month,'Mon') AS label,COUNT(v.record_id)::int AS value
+    query<{ label: string; value: number }>(`WITH normalized AS (
+      SELECT record_id,
+        CASE WHEN apprehension_date ~ '^\\d{4}-\\d{2}-\\d{2}$' THEN apprehension_date::date END AS apprehended_on
+      FROM violations
+    )
+    SELECT TO_CHAR(month,'Mon') AS label,COUNT(v.record_id)::int AS value
     FROM generate_series(
       date_trunc('month', CURRENT_DATE) - INTERVAL '5 months',
       date_trunc('month', CURRENT_DATE), INTERVAL '1 month'
     ) month
-    LEFT JOIN violations v ON v.created_at >= month AND v.created_at < month + INTERVAL '1 month'
+    LEFT JOIN normalized v ON v.apprehended_on >= month AND v.apprehended_on < month + INTERVAL '1 month'
     GROUP BY month ORDER BY month`),
-    query<{ label: string; value: number }>(`SELECT COALESCE(NULLIF(BTRIM(violations_committed),''),'Unspecified') AS label,COUNT(*)::int AS value
+    query<{ label: string; value: number }>(`SELECT COALESCE(
+      NULLIF(UPPER(REGEXP_REPLACE(BTRIM(violations_committed),'\\s+',' ','g')),''),
+      'UNSPECIFIED'
+    ) AS label,COUNT(*)::int AS value
     FROM violations GROUP BY 1 ORDER BY value DESC,label LIMIT 4`),
   ]);
 
@@ -257,7 +272,7 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
       GROUP BY paid_on
     )
     SELECT
-      COALESCE(SUM(amount) FILTER (WHERE status='Settled'),0)::float AS collected_overall,
+      COALESCE(SUM(amount) FILTER (WHERE status='Settled' AND paid_on IS NOT NULL),0)::float AS collected_overall,
       COALESCE(SUM(amount) FILTER (WHERE status='Settled' AND paid_on >= month_start AND paid_on < month_start + INTERVAL '1 month'),0)::float AS collected_month,
       COALESCE(SUM(amount) FILTER (WHERE status='Settled' AND paid_on >= month_start - INTERVAL '1 month' AND paid_on < month_start),0)::float AS collected_previous_month,
       COUNT(*) FILTER (WHERE status='Settled' AND paid_on >= month_start AND paid_on < month_start + INTERVAL '1 month')::int AS settled_month,
@@ -293,7 +308,10 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
     FROM months
     LEFT JOIN payments p ON p.paid_on >= collection_month AND p.paid_on < collection_month + INTERVAL '1 month'
     GROUP BY collection_month ORDER BY collection_month`),
-    query<{ label: string; value: number }>(`SELECT COALESCE(NULLIF(BTRIM(violations_committed),''),'Unspecified') AS label,
+    query<{ label: string; value: number }>(`SELECT COALESCE(
+      NULLIF(UPPER(REGEXP_REPLACE(BTRIM(violations_committed),'\\s+',' ','g')),''),
+      'UNSPECIFIED'
+    ) AS label,
       COALESCE(SUM(amount),0)::float AS value
     FROM violations
     WHERE status='Settled'
