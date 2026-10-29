@@ -443,3 +443,25 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .departmentSwitcher button{min-height:59px;padding-right:3px;padding-left:3px}
   .departmentSwitcher strong{font-size:10px}
 }
+
+/* Civic greeting for the executive user. */
+.mayorGreeting{
+  display:flex;
+  align-items:baseline;
+  gap:7px;
+  padding-left:20px;
+  border-left:1px solid rgba(58,92,82,.18);
+  white-space:nowrap;
+}
+.mayorGreeting span{color:#6b7d77;font-size:12px;font-weight:650}
+.mayorGreeting strong{color:#0b7059;font:800 19px "Plus Jakarta Sans",Inter,sans-serif;letter-spacing:-.025em}
+@media(max-width:660px){
+  .reportTopbar{align-items:center}
+  .mayorGreeting{display:grid;gap:0;padding-left:12px;text-align:right}
+  .mayorGreeting span{font-size:9px;line-height:1.1}
+  .mayorGreeting strong{font-size:15px;line-height:1.2}
+}
+@media(max-width:360px){
+  .mayorGreeting{padding-left:9px}
+  .mayorGreeting strong{font-size:14px}
+}
