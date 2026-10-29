@@ -145,7 +145,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
   const [departments, setDepartments] = useState<DepartmentDashboard[]>(initialData?.departments ?? emptyDepartments);
   const [selectedDepartment, setSelectedDepartment] = useState<DepartmentId>("bplo");
   const [selectedMetric, setSelectedMetric] = useState<DepartmentDashboard["metrics"][number] | null>(null);
-  const [collectionPeriod, setCollectionPeriod] = useState<7 | 14 | 21 | 30>(7);
+  const [collectionPeriod, setCollectionPeriod] = useState<"3m" | "6m" | "1y" | "lifetime">("3m");
   const [dataState, setDataState] = useState<"loading" | "ready" | "error">(initialData ? "ready" : "loading");
 
   useEffect(() => {
@@ -177,11 +177,15 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
   );
   const displayedTrend = useMemo(() => {
     if (!department.trend.periodTotals) return department.trend;
+    const selectedPeriod = department.trend.periodTotals.find((item) => item.period === collectionPeriod)
+      ?? department.trend.periodTotals[0];
     return {
       ...department.trend,
-      title: `Daily collections — last ${collectionPeriod} days`,
-      labels: department.trend.labels.slice(-collectionPeriod),
-      values: department.trend.values.slice(-collectionPeriod),
+      title: selectedPeriod.period === "lifetime"
+        ? "Monthly collections — lifetime"
+        : `Monthly collections — last ${selectedPeriod.label}`,
+      labels: selectedPeriod.labels,
+      values: selectedPeriod.values,
     };
   }, [collectionPeriod, department.trend]);
 
@@ -255,22 +259,16 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
               <h2>{displayedTrend.title}</h2>
               {department.trend.periodTotals ? (
                 <>
-                  {department.trend.overallTotal && (
-                    <div className="overallCollection">
-                      <span>Overall violation fees collected</span>
-                      <strong>{department.trend.overallTotal.display}</strong>
-                    </div>
-                  )}
                   <div className="collectionPeriods" aria-label="Collection totals by period">
                     {department.trend.periodTotals.map((period) => (
                       <button
-                        aria-pressed={collectionPeriod === period.days}
-                        className={collectionPeriod === period.days ? "active" : ""}
-                        key={period.days}
-                        onClick={() => setCollectionPeriod(period.days)}
+                        aria-pressed={collectionPeriod === period.period}
+                        className={collectionPeriod === period.period ? "active" : ""}
+                        key={period.period}
+                        onClick={() => setCollectionPeriod(period.period)}
                         type="button"
                       >
-                        <span>{period.days}-day total</span>
+                        <span>{period.label}</span>
                         <strong>{period.display}</strong>
                       </button>
                     ))}

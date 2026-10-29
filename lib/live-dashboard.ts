@@ -237,6 +237,7 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
       highest_daily_collection: number;
       highest_daily_transactions: number;
       active_collection_days: number;
+      daily_collection: number;
       elapsed_days: number;
       cohort_settled: number;
       cohort_unsettled: number;
@@ -264,24 +265,33 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
       COALESCE((SELECT MAX(collected) FROM daily),0)::float AS highest_daily_collection,
       COALESCE((SELECT MAX(transactions) FROM daily),0)::int AS highest_daily_transactions,
       COALESCE((SELECT COUNT(*) FROM daily WHERE transactions > 0),0)::int AS active_collection_days,
+      COALESCE(SUM(amount) FILTER (WHERE status='Settled' AND paid_on = (NOW() AT TIME ZONE 'Asia/Manila')::date),0)::float AS daily_collection,
       EXTRACT(DAY FROM NOW() AT TIME ZONE 'Asia/Manila')::int AS elapsed_days,
       COUNT(*) FILTER (WHERE status='Settled' AND apprehended_on >= month_start AND apprehended_on < month_start + INTERVAL '1 month')::int AS cohort_settled,
       COUNT(*) FILTER (WHERE status<>'Settled' AND apprehended_on >= month_start AND apprehended_on < month_start + INTERVAL '1 month')::int AS cohort_unsettled
     FROM normalized,bounds`),
     query<{ label: string; value: number }>(`WITH bounds AS (
       SELECT (NOW() AT TIME ZONE 'Asia/Manila')::date AS today
-    ), days AS (
-      SELECT generate_series(today - INTERVAL '29 days',today,INTERVAL '1 day')::date AS collection_day
-      FROM bounds
     ), payments AS (
       SELECT amount,status,CASE WHEN payment_date ~ '^\\d{4}-\\d{2}-\\d{2}$' THEN payment_date::date END AS paid_on
       FROM violations
+    ), range AS (
+      SELECT LEAST(
+        COALESCE(date_trunc('month', MIN(paid_on)), date_trunc('month', today)),
+        date_trunc('month', today) - INTERVAL '11 months'
+      ) AS first_month,
+      date_trunc('month', today) AS current_month
+      FROM payments,bounds
+      WHERE status='Settled'
+    ), months AS (
+      SELECT generate_series(first_month,current_month,INTERVAL '1 month')::date AS collection_month
+      FROM range
     )
-    SELECT TO_CHAR(collection_day,'Mon FMDD') AS label,
+    SELECT TO_CHAR(collection_month,'Mon YYYY') AS label,
       COALESCE(SUM(p.amount) FILTER (WHERE p.status='Settled'),0)::float AS value
-    FROM days
-    LEFT JOIN payments p ON p.paid_on = collection_day
-    GROUP BY collection_day ORDER BY collection_day`),
+    FROM months
+    LEFT JOIN payments p ON p.paid_on >= collection_month AND p.paid_on < collection_month + INTERVAL '1 month'
+    GROUP BY collection_month ORDER BY collection_month`),
     query<{ label: string; value: number }>(`SELECT COALESCE(NULLIF(BTRIM(violations_committed),''),'Unspecified') AS label,
       COALESCE(SUM(amount),0)::float AS value
     FROM violations
@@ -291,7 +301,7 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
     GROUP BY 1 ORDER BY value DESC,label LIMIT 4`),
   ]);
 
-  const summary = summaryRows[0] ?? { collected_overall: 0, collected_month: 0, collected_previous_month: 0, settled_month: 0, receipts_month: 0, highest_daily_collection: 0, highest_daily_transactions: 0, active_collection_days: 0, elapsed_days: 1, cohort_settled: 0, cohort_unsettled: 0 };
+  const summary = summaryRows[0] ?? { collected_overall: 0, collected_month: 0, collected_previous_month: 0, settled_month: 0, receipts_month: 0, highest_daily_collection: 0, highest_daily_transactions: 0, active_collection_days: 0, daily_collection: 0, elapsed_days: 1, cohort_settled: 0, cohort_unsettled: 0 };
   const collected = number(summary.collected_month);
   const settled = count(summary.cohort_settled);
   const unsettled = count(summary.cohort_unsettled);
@@ -304,10 +314,26 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
   const averageDailyIssued = issued / elapsedDays;
   const averagePayment = count(summary.settled_month) > 0 ? collected / count(summary.settled_month) : 0;
   const averageDailyReceipts = count(summary.receipts_month) / elapsedDays;
-  const dailyCollection = number(trendRows[trendRows.length - 1]?.value);
-  const collectionPeriods = ([7, 14, 21, 30] as const).map((days) => {
-    const value = trendRows.slice(-days).reduce((total, row) => total + number(row.value), 0);
-    return { days, value, display: formatMoney(value) };
+  const dailyCollection = number(summary.daily_collection);
+  const periodDefinitions = [
+    { period: "3m" as const, label: "3 months", months: 3 },
+    { period: "6m" as const, label: "6 months", months: 6 },
+    { period: "1y" as const, label: "1 year", months: 12 },
+    { period: "lifetime" as const, label: "Lifetime", months: trendRows.length },
+  ];
+  const collectionPeriods = periodDefinitions.map(({ period, label, months }) => {
+    const rows = trendRows.slice(-months);
+    const value = period === "lifetime"
+      ? number(summary.collected_overall)
+      : rows.reduce((total, row) => total + number(row.value), 0);
+    return {
+      period,
+      label,
+      value,
+      display: formatMoney(value),
+      labels: rows.map((row) => row.label),
+      values: rows.map((row) => Number((number(row.value) / 1_000).toFixed(1))),
+    };
   });
 
   return {
@@ -339,8 +365,8 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
     ],
     trend: {
       title: "Daily collections",
-      labels: trendRows.map((row) => row.label),
-      values: trendRows.map((row) => Number((number(row.value) / 1_000).toFixed(1))),
+      labels: collectionPeriods[0].labels,
+      values: collectionPeriods[0].values,
       valueSuffix: "K",
       overallTotal: {
         value: number(summary.collected_overall),

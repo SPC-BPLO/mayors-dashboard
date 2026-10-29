@@ -20,9 +20,12 @@ export type DepartmentDashboard = {
       display: string;
     };
     periodTotals?: Array<{
-      days: 7 | 14 | 21 | 30;
+      period: "3m" | "6m" | "1y" | "lifetime";
+      label: string;
       value: number;
       display: string;
+      labels: string[];
+      values: number[];
     }>;
   };
   distribution: {
