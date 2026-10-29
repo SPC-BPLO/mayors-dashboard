@@ -278,3 +278,28 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .departmentSwitcher button{flex:1;min-width:0;margin:0;padding:10px 18px 9px 10px;border-radius:9px 9px 0 0;clip-path:polygon(0 0,calc(100% - 13px) 0,100% 100%,0 100%)}
   .departmentSwitcher span{font-size:8px}.departmentSwitcher strong{font-size:10px}
 }
+
+/* Larger executive period controls with an unobstructed active state. */
+.collectionPeriods{gap:12px}
+.collectionPeriods button{
+  align-content:center;
+  min-height:66px;
+  padding:11px 14px;
+  border-radius:11px;
+}
+.collectionPeriods span{font-size:11px;letter-spacing:.055em}
+.collectionPeriods strong{margin-top:4px;font-size:20px;line-height:1.05}
+.collectionPeriods button.active{
+  border-color:rgba(20,125,100,.38);
+  box-shadow:inset 0 -4px 0 #16876a;
+}
+.collectionPeriods button.active::after{display:none}
+@media(min-width:1001px) and (min-height:700px){
+  .collectionHeading+.trendChart{height:calc(100% - 88px)}
+}
+@media(max-width:660px){
+  .collectionPeriods{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .collectionPeriods button{min-height:62px;padding:10px 12px}
+  .collectionPeriods span{font-size:10px}
+  .collectionPeriods strong{font-size:18px}
+}
