@@ -18,6 +18,7 @@ export const metadata: Metadata = {
         url: "/mayors-dashboard-preview.png?v=1",
         width: 1200,
         height: 630,
+        type: "image/png",
         alt: "Preview of the San Pablo City Mayor's Dashboard",
       },
     ],
