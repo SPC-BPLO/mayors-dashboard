@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/opengraph-image",
+        url: "/mayors-dashboard-preview.png?v=1",
         width: 1200,
         height: 630,
         alt: "Preview of the San Pablo City Mayor's Dashboard",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     title: "San Pablo City Mayor's Dashboard",
     description:
       "A clear executive view of key BPLO, CTMO, and Finance-Cashier statistics for the City of San Pablo.",
-    images: ["/opengraph-image"],
+    images: ["/mayors-dashboard-preview.png?v=1"],
   },
 };
 
