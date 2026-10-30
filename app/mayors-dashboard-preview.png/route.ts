@@ -1,4 +1,4 @@
-import OpenGraphImage from "../opengraph-image";
+import OpenGraphImage from "../../lib/social-preview";
 
 export const dynamic = "force-static";
 
