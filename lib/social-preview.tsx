@@ -1,16 +1,8 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Preview of the San Pablo City Mayor's Dashboard";
 export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
 
-const departments = [
-  { code: "BPLO", label: "Franchise", value: "6,214", detail: "Active records" },
-  { code: "CTMO", label: "Traffic Violations", value: "3,482", detail: "Violations recorded" },
-  { code: "CTO", label: "Finance-Cashier", value: "Live", detail: "Collection activity" },
-];
-
-export default function OpenGraphImage() {
+export default function SocialPreview() {
   return new ImageResponse(
     (
       <div
@@ -20,139 +12,153 @@ export default function OpenGraphImage() {
           display: "flex",
           position: "relative",
           overflow: "hidden",
-          background: "linear-gradient(135deg, #d9f1ea 0%, #eef6f8 49%, #dceaf6 100%)",
-          color: "#102d2b",
+          background: "linear-gradient(120deg, #0a2b4c 0%, #071c36 58%, #03152c 100%)",
+          color: "#f4f8fc",
           fontFamily: "Arial, Helvetica, sans-serif",
         }}
       >
         <div
           style={{
             position: "absolute",
-            width: 520,
-            height: 520,
-            left: -170,
-            bottom: -240,
+            width: 820,
+            height: 820,
+            left: -210,
+            top: -120,
             borderRadius: 999,
-            background: "rgba(36, 174, 137, .22)",
-            filter: "blur(2px)",
+            background: "rgba(75, 143, 194, .2)",
           }}
         />
         <div
           style={{
             position: "absolute",
-            width: 420,
-            height: 420,
-            right: -120,
-            top: -210,
-            borderRadius: 999,
-            background: "rgba(80, 145, 196, .18)",
+            width: 560,
+            height: 150,
+            left: -70,
+            top: 70,
+            background: "linear-gradient(100deg, rgba(183,231,255,.8), rgba(55,46,93,.72) 48%, rgba(155,197,221,.65))",
+            transform: "rotate(-8deg)",
+            opacity: .65,
           }}
         />
-
         <div
           style={{
-            margin: 52,
-            padding: "38px 42px 36px",
-            width: 1096,
-            height: 526,
+            position: "absolute",
+            width: 660,
+            height: 150,
+            right: -80,
+            bottom: -25,
+            background: "linear-gradient(90deg, rgba(23,51,78,.8), rgba(162,189,209,.62), rgba(56,47,77,.75))",
+            transform: "rotate(-7deg)",
+            opacity: .45,
+          }}
+        />
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
             display: "flex",
-            flexDirection: "column",
-            border: "2px solid rgba(255,255,255,.92)",
-            borderRadius: 34,
-            background: "rgba(255,255,255,.62)",
-            boxShadow: "0 22px 65px rgba(33, 75, 70, .18)",
+            alignItems: "center",
+            padding: "44px 58px",
+            position: "relative",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <span
-                style={{
-                  color: "#187b68",
-                  fontSize: 18,
-                  fontWeight: 700,
-                  letterSpacing: 4,
-                }}
-              >
-                SAN PABLO CITY
-              </span>
-              <span style={{ marginTop: 9, fontSize: 45, fontWeight: 800, letterSpacing: -1.8 }}>
-                Mayor&apos;s Dashboard
+          <div
+            style={{
+              width: 550,
+              height: 542,
+              display: "flex",
+              position: "relative",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+              border: "2px solid rgba(213, 234, 249, .28)",
+              borderRadius: 42,
+              background: "linear-gradient(150deg, rgba(130,177,218,.94), rgba(49,68,103,.88) 48%, rgba(100,137,170,.76))",
+              boxShadow: "0 30px 70px rgba(0, 10, 27, .38)",
+            }}
+          >
+            <div
+              style={{
+                width: 445,
+                height: 445,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 999,
+                background: "rgba(247,251,255,.94)",
+                boxShadow: "0 0 0 13px rgba(0,91,54,.82), 0 0 0 27px rgba(5,35,68,.72), 0 23px 55px rgba(0,15,37,.38)",
+              }}
+            >
+              <img
+                src="https://mayors-dashboard.vercel.app/san-pablo-city-seal.png?v=1"
+                width="430"
+                height="430"
+                alt="San Pablo City official seal"
+                style={{ objectFit: "contain" }}
+              />
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                left: 28,
+                top: 28,
+                display: "flex",
+                flexDirection: "column",
+                padding: "12px 16px",
+                border: "1px solid rgba(224,238,250,.2)",
+                borderRadius: 12,
+                background: "rgba(5,26,53,.78)",
+              }}
+            >
+              <span style={{ fontSize: 19, fontWeight: 800 }}>City Government of San Pablo</span>
+              <span style={{ marginTop: 4, color: "#b8cde1", fontSize: 12, fontWeight: 800, letterSpacing: 2 }}>
+                OFFICE OF THE CITY MAYOR
               </span>
             </div>
             <div
               style={{
+                position: "absolute",
+                left: 28,
+                bottom: 28,
                 display: "flex",
-                alignItems: "center",
-                padding: "12px 19px",
-                borderRadius: 999,
-                background: "#e3f6ef",
-                color: "#14745f",
-                fontSize: 16,
-                fontWeight: 700,
+                flexDirection: "column",
+                padding: "13px 18px",
+                borderRadius: 12,
+                background: "rgba(5,26,53,.86)",
               }}
             >
-              <span
-                style={{
-                  width: 10,
-                  height: 10,
-                  marginRight: 10,
-                  borderRadius: 99,
-                  background: "#23a981",
-                }}
-              />
-              LIVE EXECUTIVE VIEW
+              <span style={{ color: "#b8cde1", fontSize: 11, fontWeight: 800, letterSpacing: 2 }}>
+                EXECUTIVE REPORTING PORTAL
+              </span>
+              <span style={{ marginTop: 5, fontSize: 23, fontWeight: 800 }}>Mayor&apos;s Dashboard</span>
             </div>
           </div>
-
-          <div style={{ display: "flex", gap: 18, marginTop: 43 }}>
-            {departments.map((department, index) => (
-              <div
-                key={department.code}
-                style={{
-                  width: 326,
-                  minHeight: 245,
-                  display: "flex",
-                  flexDirection: "column",
-                  padding: "27px 28px",
-                  borderRadius: 24,
-                  border: index === 0 ? "2px solid #5ab9a1" : "1px solid rgba(31, 80, 75, .13)",
-                  background: index === 0 ? "rgba(225, 248, 240, .88)" : "rgba(255,255,255,.72)",
-                  boxShadow: "0 12px 26px rgba(30, 72, 68, .08)",
-                }}
-              >
-                <span style={{ color: "#137963", fontSize: 16, fontWeight: 800, letterSpacing: 2 }}>
-                  {department.code}
-                </span>
-                <span style={{ marginTop: 6, color: "#49625f", fontSize: 22, fontWeight: 700 }}>
-                  {department.label}
-                </span>
-                <span style={{ marginTop: 31, color: "#102d2b", fontSize: 49, fontWeight: 800 }}>
-                  {department.value}
-                </span>
-                <span style={{ marginTop: 7, color: "#657b78", fontSize: 17 }}>{department.detail}</span>
-                <div
-                  style={{
-                    height: 7,
-                    marginTop: 20,
-                    borderRadius: 99,
-                    background: index === 0 ? "#2a9b80" : index === 1 ? "#5b98c4" : "#e2a03f",
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-
           <div
             style={{
+              flex: 1,
+              height: 542,
               display: "flex",
-              justifyContent: "space-between",
-              marginTop: 25,
-              color: "#59716e",
-              fontSize: 17,
+              flexDirection: "column",
+              justifyContent: "center",
+              paddingLeft: 65,
             }}
           >
-            <span>Key city statistics in one clear view</span>
-            <span style={{ color: "#187b68", fontWeight: 700 }}>mayors-dashboard.vercel.app</span>
+            <span style={{ color: "#6eb0df", fontSize: 16, fontWeight: 800, letterSpacing: 4 }}>
+              SAN PABLO CITY
+            </span>
+            <span style={{ marginTop: 18, fontSize: 76, fontWeight: 500, lineHeight: .96, letterSpacing: -4 }}>
+              Mayor&apos;s
+            </span>
+            <span style={{ fontSize: 76, fontWeight: 500, lineHeight: .96, letterSpacing: -4 }}>
+              Dashboard
+            </span>
+            <span style={{ marginTop: 30, color: "#a6c2dd", fontSize: 26, lineHeight: 1.35 }}>
+              City statistics and executive insights in one clear view.
+            </span>
+            <div style={{ width: 132, height: 6, marginTop: 34, borderRadius: 99, background: "#3e91cc" }} />
+            <span style={{ marginTop: 27, color: "#7fa3c3", fontSize: 17 }}>
+              mayors-dashboard.vercel.app
+            </span>
           </div>
         </div>
       </div>
@@ -160,4 +166,3 @@ export default function OpenGraphImage() {
     size,
   );
 }
-
