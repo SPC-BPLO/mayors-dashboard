@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const size = { width: 1200, height: 630 };
 
-export default function SocialPreview() {
+export default function SocialPreview(sealDataUrl: string) {
   return new ImageResponse(
     (
       <div
@@ -90,9 +90,9 @@ export default function SocialPreview() {
               }}
             >
               <img
-                src="https://mayors-dashboard.vercel.app/san-pablo-city-seal.png?v=1"
-                width="430"
-                height="430"
+                src={sealDataUrl}
+                width={430}
+                height={430}
                 alt="San Pablo City official seal"
                 style={{ objectFit: "contain" }}
               />
