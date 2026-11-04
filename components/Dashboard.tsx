@@ -147,6 +147,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
   const [selectedMetric, setSelectedMetric] = useState<DepartmentDashboard["metrics"][number] | null>(null);
   const [collectionPeriod, setCollectionPeriod] = useState<"3m" | "6m" | "1y" | "lifetime">("3m");
   const [dataState, setDataState] = useState<"loading" | "ready" | "error">(initialData ? "ready" : "loading");
+  const metricDialogOpen = Boolean(selectedMetric?.details);
 
   useEffect(() => {
     let active = true;
@@ -170,6 +171,46 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
       window.clearInterval(refresh);
     };
   }, [initialData]);
+
+  useEffect(() => {
+    if (!metricDialogOpen) return;
+
+    const scrollPosition = window.scrollY;
+    const root = document.documentElement;
+    const body = document.body;
+    const previousRootOverflow = root.style.overflow;
+    const previousRootOverscroll = root.style.overscrollBehavior;
+    const previousBodyOverflow = body.style.overflow;
+    const previousBodyPosition = body.style.position;
+    const previousBodyTop = body.style.top;
+    const previousBodyWidth = body.style.width;
+    const previousBodyOverscroll = body.style.overscrollBehavior;
+
+    root.style.overflow = "hidden";
+    root.style.overscrollBehavior = "none";
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollPosition}px`;
+    body.style.width = "100%";
+    body.style.overscrollBehavior = "none";
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedMetric(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      window.removeEventListener("keydown", closeOnEscape);
+      root.style.overflow = previousRootOverflow;
+      root.style.overscrollBehavior = previousRootOverscroll;
+      body.style.overflow = previousBodyOverflow;
+      body.style.position = previousBodyPosition;
+      body.style.top = previousBodyTop;
+      body.style.width = previousBodyWidth;
+      body.style.overscrollBehavior = previousBodyOverscroll;
+      window.scrollTo(0, scrollPosition);
+    };
+  }, [metricDialogOpen]);
 
   const department = useMemo(
     () => departments.find((item) => item.id === selectedDepartment) ?? departments[0],

@@ -514,3 +514,8 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .departmentSwitcher button,.departmentSwitcher button::before,.collectionPeriods button,.collectionPeriods button::before{transition:none}
   .departmentReport{animation:none}
 }
+
+/* Keep the dashboard fixed behind an open metric card on touch devices. */
+.metricOverlay{overflow-y:auto;overscroll-behavior:contain;touch-action:none}
+.metricDialog{max-height:calc(100dvh - 48px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+@media(max-width:620px){.metricDialog{max-height:calc(100dvh - 24px)}}
