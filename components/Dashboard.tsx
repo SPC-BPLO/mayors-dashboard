@@ -151,24 +151,42 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
 
   useEffect(() => {
     let active = true;
+    let requestInFlight = false;
     const load = async () => {
+      if (requestInFlight) return;
+      requestInFlight = true;
       try {
         const response = await fetch("/api/dashboard", { cache: "no-store" });
         if (!response.ok) throw new Error("Live data request failed");
         const result = (await response.json()) as MayorDashboardResponse;
+        if (result.source !== "live" || !Array.isArray(result.departments)) {
+          throw new Error("Invalid live dashboard response");
+        }
         if (active) {
           setDepartments(result.departments);
           setDataState("ready");
         }
       } catch {
         if (active) setDataState("error");
+      } finally {
+        requestInFlight = false;
       }
     };
-    if (!initialData) load();
-    const refresh = window.setInterval(load, 60_000);
+
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") void load();
+    };
+
+    void load();
+    const refresh = window.setInterval(load, 30_000);
+    window.addEventListener("focus", refreshWhenVisible);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+
     return () => {
       active = false;
       window.clearInterval(refresh);
+      window.removeEventListener("focus", refreshWhenVisible);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
   }, [initialData]);
 

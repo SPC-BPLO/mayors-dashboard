@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
-import { getMayorDashboard } from "@/lib/dashboard-cache";
+import { getFreshMayorDashboard } from "@/lib/dashboard-cache";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const dashboard = await getMayorDashboard();
+    const dashboard = await getFreshMayorDashboard();
     return NextResponse.json(dashboard, {
-      headers: { "Cache-Control": "no-store, max-age=0" },
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+        "X-Dashboard-Source": dashboard.source,
+        "X-Dashboard-Updated-At": dashboard.updatedAt,
+      },
     });
   } catch (error) {
     console.error("Unable to load live Mayor's Dashboard aggregates", error);
