@@ -28,13 +28,20 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
   const width = 640;
   const height = 230;
-  const left = 28;
+  const left = 66;
   const right = 18;
-  const top = 22;
-  const bottom = 42;
-  const minimum = Math.min(...trend.values);
+  const top = 28;
+  const bottom = 50;
+  const minimum = 0;
   const maximum = Math.max(...trend.values);
   const range = Math.max(maximum - minimum, 1);
+  const isCurrency = trend.valueSuffix === "K";
+  const yAxisTitle = isCurrency
+    ? "Amount (₱K)"
+    : trend.title.toLowerCase().includes("franchise")
+      ? "Franchises"
+      : "Records";
+  const xAxisTitle = isCurrency ? "Collection period" : "Month";
   const points = trend.values.map((value, index) => {
     const x = left + (index * (width - left - right)) / Math.max(trend.values.length - 1, 1);
     const y = top + ((maximum - value) / range) * (height - top - bottom);
@@ -48,8 +55,21 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
       <svg viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
         {[0, 1, 2, 3].map((line) => {
           const y = top + (line * (height - top - bottom)) / 3;
-          return <line key={line} x1={left} x2={width - right} y1={y} y2={y} className="chartGridline" />;
+          const value = maximum - (line * range) / 3;
+          const label = isCurrency
+            ? `₱${value.toLocaleString("en-PH", { maximumFractionDigits: 1 })}K`
+            : Math.round(value).toLocaleString("en-PH");
+          return (
+            <g key={line}>
+              <line x1={left} x2={width - right} y1={y} y2={y} className="chartGridline" />
+              <text x={left - 10} y={y + 4} textAnchor="end" className="chartAxisValue">{label}</text>
+            </g>
+          );
         })}
+        <line x1={left} x2={left} y1={top} y2={height - bottom} className="chartAxisLine" />
+        <line x1={left} x2={width - right} y1={height - bottom} y2={height - bottom} className="chartAxisLine" />
+        <text x={left} y={15} className="chartAxisTitle">{yAxisTitle}</text>
+        <text x={(left + width - right) / 2} y={height - 2} textAnchor="middle" className="chartAxisTitle">{xAxisTitle}</text>
         <polygon points={area} className="chartArea" />
         <polyline points={polyline} className="chartLine" />
         {points.map(({ x, y, value }, index) => {
