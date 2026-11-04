@@ -231,7 +231,7 @@ async function ctmoDashboard(): Promise<DepartmentDashboard> {
       centerLabel: "tickets",
       items: [
         { label: "Settled", value: settled, display: formatCount(settled) },
-        { label: "Unresolved", value: unresolved, display: formatCount(unresolved) },
+        { label: "Unsettled", value: unresolved, display: formatCount(unresolved) },
       ],
     },
     ranking: {
