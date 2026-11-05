@@ -174,6 +174,7 @@ footer{font-size:11px}
   .distributionLegend{gap:7px}.distributionLegend span,.distributionLegend strong{font-size:9px}
   .rankingBars{grid-template-columns:1fr;gap:10px;margin-top:13px}.rankingRow{gap:5px}.rankingRow span,.rankingRow strong{font-size:10px}
 }
+
 @media(max-width:380px){
   .distributionLayout{grid-template-columns:1fr}.donutChart{justify-self:center}
 }
@@ -653,3 +654,64 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .trendChart{height:230px}
   .trendChart svg{height:230px}
 }
+
+/* Desktop analytics should remain the visual focus of the executive view. */
+@media(min-width:1001px) and (min-height:700px){
+  .reportTopbar{min-height:58px;padding-top:8px;padding-bottom:8px}
+  .departmentSwitcher button{padding-top:7px;padding-bottom:6px}
+  .departmentReport{
+    height:calc(100dvh - 112px);
+    padding-top:12px;
+    padding-bottom:12px;
+  }
+  .reportHeading{margin-bottom:8px}
+  .reportHeading h1{font-size:clamp(25px,2.15vw,34px)}
+  .reportMetrics{gap:10px}
+  .reportMetrics article,
+  .compactMetrics article{min-height:76px;padding:10px 16px}
+  .analyticsGrid{
+    grid-template-rows:minmax(300px,1fr) auto;
+    gap:10px;
+    margin-top:10px;
+  }
+  .analyticsPanel{padding:14px 16px}
+  .trendPanel{display:flex;flex-direction:column}
+  .trendPanel .panelHeading{flex:none}
+  .trendPanel .trendChart{
+    flex:1;
+    min-height:0;
+    height:auto;
+    margin-top:7px;
+  }
+  .trendPanel .trendChart svg{
+    height:100%;
+    min-height:250px;
+    max-height:none;
+  }
+  .distributionLayout{height:calc(100% - 31px);margin-top:8px}
+  .donutChart{width:min(180px,13vw)}
+  .rankingPanel{padding-top:11px;padding-bottom:11px}
+}
+
+/* Live-fetch feedback floats above the interface and never shifts report content. */
+.liveDataNotice{
+  position:fixed;
+  z-index:90;
+  top:124px;
+  right:clamp(18px,4vw,64px);
+  width:min(390px,calc(100vw - 36px));
+  margin:0;
+  padding:11px 14px;
+  background:rgba(255,255,255,.94);
+  border:1px solid #d7e2dd;
+  border-left:4px solid var(--report-green);
+  border-radius:8px;
+  box-shadow:0 14px 35px rgba(28,58,49,.16);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  animation:liveNoticeIn .2s ease-out both;
+}
+.liveDataNotice.error{border-left-color:#b77a28}
+@keyframes liveNoticeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:660px){.liveDataNotice{top:118px;right:12px;width:calc(100vw - 24px)}}
+@media(prefers-reduced-motion:reduce){.liveDataNotice{animation:none}}
