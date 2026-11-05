@@ -346,7 +346,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
         </section>
 
         <section className="analyticsGrid" aria-label={`${department.short} analytics`}>
-          <article className="analyticsPanel trendPanel">
+          <article className={`analyticsPanel trendPanel${department.trend.periodTotals ? " trendPanelWithPeriods" : ""}`}>
             <div className={`panelHeading${department.trend.periodTotals ? " collectionHeading" : ""}`}>
               <h2>{displayedTrend.title}</h2>
               {department.trend.periodTotals ? (
