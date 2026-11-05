@@ -688,6 +688,13 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
     min-height:250px;
     max-height:none;
   }
+  .trendPanelWithPeriods .collectionHeading{
+    grid-template-columns:minmax(230px,.42fr) minmax(0,1fr);
+    align-items:end;
+    gap:18px;
+  }
+  .trendPanelWithPeriods .collectionHeading>h2{align-self:center}
+  .trendPanelWithPeriods .trendChart svg{min-height:0}
   .distributionLayout{height:calc(100% - 31px);margin-top:8px}
   .donutChart{width:min(180px,13vw)}
   .rankingPanel{padding-top:11px;padding-bottom:11px}
