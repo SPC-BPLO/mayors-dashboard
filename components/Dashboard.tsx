@@ -42,6 +42,7 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
       ? "Franchises"
       : "Records";
   const xAxisTitle = isCurrency ? "Collection period" : "Month";
+  const yAxisTitleY = top + (height - top - bottom) / 2;
   const points = trend.values.map((value, index) => {
     const x = left + (index * (width - left - right)) / Math.max(trend.values.length - 1, 1);
     const y = top + ((maximum - value) / range) * (height - top - bottom);
@@ -68,7 +69,15 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
         })}
         <line x1={left} x2={left} y1={top} y2={height - bottom} className="chartAxisLine" />
         <line x1={left} x2={width - right} y1={height - bottom} y2={height - bottom} className="chartAxisLine" />
-        <text x={left} y={15} className="chartAxisTitle">{yAxisTitle}</text>
+        <text
+          x={14}
+          y={yAxisTitleY}
+          textAnchor="middle"
+          transform={`rotate(-90 14 ${yAxisTitleY})`}
+          className="chartAxisTitle"
+        >
+          {yAxisTitle}
+        </text>
         <text x={(left + width - right) / 2} y={height - 2} textAnchor="middle" className="chartAxisTitle">{xAxisTitle}</text>
         <polygon points={area} className="chartArea" />
         <polyline points={polyline} className="chartLine" />
@@ -85,7 +94,7 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
             onMouseLeave={() => setHoveredPoint(null)}
             tabIndex={trend.periodTotals ? 0 : undefined}
           >
-            <title>{trend.labels[index]}: {formatTrendValue(value, trend.valueSuffix)}</title>
+            <title>{`${trend.labels[index]}: ${formatTrendValue(value, trend.valueSuffix)}`}</title>
             <circle cx={x} cy={y} r="5" className="chartPoint" />
             <circle cx={x} cy={y} r="14" className="chartHitArea" />
             {!trend.periodTotals && (
