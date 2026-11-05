@@ -635,7 +635,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
 @media(max-width:660px){
   .reportTopbar{background:#fff}
   .departmentSwitcher{
-    grid-template-columns:.76fr 1.08fr 1.36fr;
+    grid-template-columns:repeat(3,minmax(0,1fr));
     gap:0;
     padding:0 10px;
     background:#fff;
