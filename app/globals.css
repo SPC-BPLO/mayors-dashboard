@@ -634,34 +634,10 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
 
 @media(max-width:660px){
   .reportTopbar{background:#fff}
-  .departmentSwitcher{
-    grid-template-columns:1fr;
-    gap:8px;
-    padding:12px 18px 14px;
-    background:#fff;
-  }
-  .departmentSwitcher button{
-    display:grid;
-    grid-template-columns:64px minmax(0,1fr);
-    align-items:center;
-    min-height:58px;
-    padding:10px 14px;
-    color:#55625e;
-    text-align:left;
-    background:#f6f8f7;
-    border:1px solid #dce3df;
-    border-radius:8px;
-  }
-  .departmentSwitcher button:hover{background:#f1f5f3;border-color:#ccd7d2}
-  .departmentSwitcher button.active{
-    color:#115c49;
-    background:#e8f2ee;
-    border-color:#a8c4b9;
-    box-shadow:inset 4px 0 0 var(--report-green);
-  }
-  .departmentSwitcher button::before{display:none}
-  .departmentSwitcher span{font-size:10px;letter-spacing:.12em}
-  .departmentSwitcher strong{font-size:14px;line-height:1.25}
+  .departmentSwitcher{gap:0;padding:0 16px;background:#fff}
+  .departmentSwitcher button{min-height:54px;padding:10px 4px;border:0;border-radius:0;background:transparent}
+  .departmentSwitcher button:hover,.departmentSwitcher button.active{background:transparent;border:0;box-shadow:none}
+  .departmentSwitcher button::before{right:5px;left:5px}
   .departmentReport{padding:22px 18px 38px}
   .reportMetrics article{min-height:100px;padding:14px;border-radius:7px}
   .analyticsPanel{padding:15px;border-radius:7px}
