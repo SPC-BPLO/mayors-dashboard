@@ -284,10 +284,6 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
           <span>San Pablo City</span>
           <strong>Mayor&apos;s Dashboard</strong>
         </div>
-        <div className="mayorGreeting" aria-label="Mabuhay Mayora">
-          <span>Mabuhay</span>
-          <strong>Mayora</strong>
-        </div>
       </header>
 
       <nav className="departmentSwitcher" aria-label="Department reports" role="tablist">
@@ -309,6 +305,11 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
           </button>
         ))}
       </nav>
+
+      <div className="mayorGreetingBand" aria-label="Mabuhay Mayora">
+        <span>Mabuhay</span>
+        <strong>Mayora</strong>
+      </div>
 
       <main className="departmentReport" id="department-report" key={department.id} role="tabpanel">
         <div className="reportHeading">

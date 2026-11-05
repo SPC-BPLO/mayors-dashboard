@@ -543,8 +543,18 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
 }
 .reportBrand strong{font-size:22px;font-weight:700;letter-spacing:-.02em}
 .reportBrand span{font-size:10px;letter-spacing:.16em}
-.mayorGreeting{border-left-color:#d8dfdb}
-.mayorGreeting strong{color:var(--report-green);font-size:18px;font-weight:700}
+.mayorGreetingBand{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  min-height:42px;
+  padding:8px clamp(24px,5vw,82px);
+  color:#fff;
+  background:#176b55;
+  border-bottom:1px solid #115b48;
+}
+.mayorGreetingBand span{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.78}
+.mayorGreetingBand strong{font-size:21px;font-weight:700;letter-spacing:-.025em}
 .departmentSwitcher{
   align-items:stretch;
   gap:22px;
@@ -647,6 +657,9 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .departmentSwitcher button{width:100%;min-width:0;min-height:54px;padding:10px 4px;border:0;border-radius:0;background:transparent}
   .departmentSwitcher button:hover,.departmentSwitcher button.active{background:transparent;border:0;box-shadow:none}
   .departmentSwitcher button::before{right:5px;left:5px}
+  .mayorGreetingBand{min-height:46px;padding:9px 18px}
+  .mayorGreetingBand span{font-size:9px}
+  .mayorGreetingBand strong{font-size:20px}
   .departmentReport{padding:22px 18px 38px}
   .reportMetrics article{min-height:100px;padding:14px;border-radius:7px}
   .analyticsPanel{padding:15px;border-radius:7px}
@@ -660,7 +673,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .reportTopbar{min-height:58px;padding-top:8px;padding-bottom:8px}
   .departmentSwitcher button{padding-top:7px;padding-bottom:6px}
   .departmentReport{
-    height:calc(100dvh - 112px);
+    height:calc(100dvh - 154px);
     padding-top:12px;
     padding-bottom:12px;
   }
