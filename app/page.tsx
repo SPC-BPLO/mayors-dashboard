@@ -4,7 +4,7 @@ import type { MayorDashboardResponse } from "@/lib/dashboard-types";
 
 // Keep the HTML shell publicly cacheable for link-preview crawlers while
 // refreshing the server-rendered dashboard snapshot every 30 seconds.
-export const revalidate = 30;
+export const revalidate = 15;
 
 export default async function Home() {
   let initialData: MayorDashboardResponse | undefined;

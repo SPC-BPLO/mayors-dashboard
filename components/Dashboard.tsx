@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { DepartmentDashboard, DepartmentId, MayorDashboardResponse } from "@/lib/dashboard-types";
 
 const monthLabels = ["—", "—", "—", "—", "—", "—"];
@@ -175,7 +175,8 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
   const [selectedDepartment, setSelectedDepartment] = useState<DepartmentId>("bplo");
   const [selectedMetric, setSelectedMetric] = useState<DepartmentDashboard["metrics"][number] | null>(null);
   const [collectionPeriod, setCollectionPeriod] = useState<"3m" | "6m" | "1y" | "lifetime">("3m");
-  const [dataState, setDataState] = useState<"loading" | "ready" | "error">(initialData ? "ready" : "loading");
+  const [dataState, setDataState] = useState<"loading" | "ready" | "delayed" | "error">(initialData ? "ready" : "loading");
+  const hasVerifiedData = useRef(Boolean(initialData));
   const metricDialogOpen = Boolean(selectedMetric?.details);
 
   useEffect(() => {
@@ -184,8 +185,10 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
     const load = async () => {
       if (requestInFlight) return;
       requestInFlight = true;
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 12_000);
       try {
-        const response = await fetch("/api/dashboard", { cache: "no-store" });
+        const response = await fetch("/api/dashboard", { cache: "no-store", signal: controller.signal });
         if (!response.ok) throw new Error("Live data request failed");
         const result = (await response.json()) as MayorDashboardResponse;
         if (result.source !== "live" || !Array.isArray(result.departments)) {
@@ -193,11 +196,14 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
         }
         if (active) {
           setDepartments(result.departments);
-          setDataState("ready");
+          hasVerifiedData.current = true;
+          const snapshotAge = Date.now() - Date.parse(result.updatedAt);
+          setDataState(Number.isFinite(snapshotAge) && snapshotAge > 60_000 ? "delayed" : "ready");
         }
       } catch {
-        if (active) setDataState("error");
+        if (active) setDataState(hasVerifiedData.current ? "delayed" : "error");
       } finally {
+        window.clearTimeout(timeout);
         requestInFlight = false;
       }
     };
@@ -207,7 +213,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
     };
 
     void load();
-    const refresh = window.setInterval(load, 30_000);
+    const refresh = window.setInterval(load, 15_000);
     window.addEventListener("focus", refreshWhenVisible);
     document.addEventListener("visibilitychange", refreshWhenVisible);
 
@@ -286,7 +292,11 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
         </div>
         {dataState !== "ready" && (
           <div className={`liveDataNotice ${dataState}`} role="status">
-            {dataState === "loading" ? "Loading live departmental data…" : "Live data unavailable. No demonstration values are being shown."}
+            {dataState === "loading"
+              ? "Loading live departmental data…"
+              : dataState === "delayed"
+                ? "Live refresh delayed. Showing the last verified database values."
+                : "Live data unavailable. No demonstration values are being shown."}
           </div>
         )}
       </header>

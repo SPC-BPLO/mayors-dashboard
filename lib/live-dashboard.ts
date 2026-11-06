@@ -21,9 +21,12 @@ function pool() {
   if (!globalThis.mayorDashboardPool) {
     globalThis.mayorDashboardPool = new Pool({
       connectionString,
-      max: 1,
-      idleTimeoutMillis: 5_000,
-      connectionTimeoutMillis: 20_000,
+      max: 4,
+      idleTimeoutMillis: 30_000,
+      connectionTimeoutMillis: 8_000,
+      query_timeout: 15_000,
+      statement_timeout: 12_000,
+      keepAlive: true,
       allowExitOnIdle: true,
       ssl: process.env.MAYOR_DATABASE_SSL === "false" ? undefined : { rejectUnauthorized: false },
     });
@@ -31,8 +34,20 @@ function pool() {
   return globalThis.mayorDashboardPool;
 }
 
+function isTransientDatabaseError(error: unknown) {
+  const candidate = error as { code?: string; message?: string };
+  return ["ETIMEDOUT", "ECONNRESET", "ENOTFOUND", "57P01", "53300"].includes(candidate?.code ?? "")
+    || /timeout|connection terminated|connection closed/i.test(candidate?.message ?? "");
+}
+
 async function query<T extends QueryResultRow>(text: string) {
-  return (await pool().query<T>(text)).rows;
+  try {
+    return (await pool().query<T>(text)).rows;
+  } catch (error) {
+    if (!isTransientDatabaseError(error)) throw error;
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    return (await pool().query<T>(text)).rows;
+  }
 }
 
 function number(value: unknown) {
@@ -436,10 +451,4 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
 export async function loadMayorDashboard(): Promise<MayorDashboardResponse> {
   const departments = await Promise.all([bploDashboard(), ctmoDashboard(), financeDashboard()]);
   return { departments, updatedAt: new Date().toISOString(), source: "live" };
-}
-
-export async function closeMayorDashboardConnection() {
-  const activePool = globalThis.mayorDashboardPool;
-  globalThis.mayorDashboardPool = undefined;
-  if (activePool) await activePool.end();
 }
