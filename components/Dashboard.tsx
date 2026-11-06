@@ -235,6 +235,42 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
   }, [initialData]);
 
   useEffect(() => {
+    if (dataState !== "error") return;
+
+    const root = document.documentElement;
+    const body = document.body;
+    const previousRootOverflow = root.style.overflow;
+    const previousRootOverscroll = root.style.overscrollBehavior;
+    const previousBodyOverflow = body.style.overflow;
+    const previousBodyOverscroll = body.style.overscrollBehavior;
+    const previousBodyTouchAction = body.style.touchAction;
+    const dashboard = document.querySelector<HTMLElement>(".reportDashboard");
+    const blockedSections = Array.from(dashboard?.children ?? []).filter(
+      (element): element is HTMLElement => element instanceof HTMLElement && !element.classList.contains("maintenanceOverlay"),
+    );
+
+    root.style.overflow = "hidden";
+    root.style.overscrollBehavior = "none";
+    body.style.overflow = "hidden";
+    body.style.overscrollBehavior = "none";
+    body.style.touchAction = "none";
+    blockedSections.forEach((section) => {
+      section.inert = true;
+    });
+
+    return () => {
+      root.style.overflow = previousRootOverflow;
+      root.style.overscrollBehavior = previousRootOverscroll;
+      body.style.overflow = previousBodyOverflow;
+      body.style.overscrollBehavior = previousBodyOverscroll;
+      body.style.touchAction = previousBodyTouchAction;
+      blockedSections.forEach((section) => {
+        section.inert = false;
+      });
+    };
+  }, [dataState]);
+
+  useEffect(() => {
     if (!metricDialogOpen) return;
 
     const scrollPosition = window.scrollY;
@@ -299,7 +335,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
           <span>San Pablo City</span>
           <strong>Mayor&apos;s Dashboard</strong>
         </div>
-        {dataState !== "ready" && (
+        {dataState !== "ready" && dataState !== "error" && (
           <div className={`liveDataNotice ${dataState}`} role="status">
             {dataState === "loading"
               ? "Loading live departmental data…"
@@ -311,10 +347,10 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
       </header>
 
       {dataState === "error" && (
-        <div className="maintenanceOverlay" role="alert" aria-live="assertive">
+        <div className="maintenanceOverlay" role="alertdialog" aria-live="assertive" aria-modal="true" aria-labelledby="maintenance-title">
           <section className="maintenanceNotice">
             <span className="maintenanceStatus"><i /> System notice</span>
-            <h1>System maintenance</h1>
+            <h1 id="maintenance-title">System maintenance</h1>
           </section>
         </div>
       )}
