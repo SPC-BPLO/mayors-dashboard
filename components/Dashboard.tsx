@@ -175,7 +175,9 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
   const [selectedDepartment, setSelectedDepartment] = useState<DepartmentId>("bplo");
   const [selectedMetric, setSelectedMetric] = useState<DepartmentDashboard["metrics"][number] | null>(null);
   const [collectionPeriod, setCollectionPeriod] = useState<"3m" | "6m" | "1y" | "lifetime">("3m");
-  const [dataState, setDataState] = useState<"loading" | "ready" | "delayed" | "error">(initialData ? "ready" : "loading");
+  const [dataState, setDataState] = useState<"loading" | "ready" | "delayed" | "error">(initialData ? "ready" : "error");
+  const [retryVersion, setRetryVersion] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
   const hasVerifiedData = useRef(Boolean(initialData));
   const metricDialogOpen = Boolean(selectedMetric?.details);
 
@@ -186,11 +188,20 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
       if (requestInFlight) return;
       requestInFlight = true;
       const controller = new AbortController();
-      const timeout = window.setTimeout(() => controller.abort(), 12_000);
+      let timeout = 0;
       try {
-        const response = await fetch("/api/dashboard", { cache: "no-store", signal: controller.signal });
-        if (!response.ok) throw new Error("Live data request failed");
-        const result = (await response.json()) as MayorDashboardResponse;
+        const result = await Promise.race([
+          fetch("/api/dashboard", { cache: "no-store", signal: controller.signal }).then(async (response) => {
+            if (!response.ok) throw new Error("Live data request failed");
+            return response.json() as Promise<MayorDashboardResponse>;
+          }),
+          new Promise<never>((_, reject) => {
+            timeout = window.setTimeout(() => {
+              controller.abort();
+              reject(new Error("Live data request timed out"));
+            }, 8_000);
+          }),
+        ]);
         if (result.source !== "live" || !Array.isArray(result.departments)) {
           throw new Error("Invalid live dashboard response");
         }
@@ -205,6 +216,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
       } finally {
         window.clearTimeout(timeout);
         requestInFlight = false;
+        if (active) setIsRetrying(false);
       }
     };
 
@@ -223,7 +235,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
       window.removeEventListener("focus", refreshWhenVisible);
       document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
-  }, [initialData]);
+  }, [initialData, retryVersion]);
 
   useEffect(() => {
     if (!metricDialogOpen) return;
@@ -300,6 +312,27 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
           </div>
         )}
       </header>
+
+      {dataState === "error" && (
+        <div className="maintenanceOverlay" role="alert" aria-live="assertive">
+          <section className="maintenanceNotice">
+            <span className="maintenanceStatus"><i /> System notice</span>
+            <h1>Dashboard temporarily unavailable</h1>
+            <p>
+              The live database cannot be reached right now. No demonstration values are being shown,
+              so the figures displayed later will remain accurate.
+            </p>
+            <button type="button" disabled={isRetrying} onClick={() => {
+              setIsRetrying(true);
+              setDataState("error");
+              setRetryVersion((version) => version + 1);
+            }}>
+              {isRetrying ? "Retrying connection…" : "Retry live connection"}
+            </button>
+            <small>The dashboard will also reconnect automatically.</small>
+          </section>
+        </div>
+      )}
 
       <nav className="departmentSwitcher" aria-label="Department reports" role="tablist">
         {departments.map((item) => (
