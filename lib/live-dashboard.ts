@@ -21,11 +21,11 @@ function pool() {
   if (!globalThis.mayorDashboardPool) {
     globalThis.mayorDashboardPool = new Pool({
       connectionString,
-      max: 4,
+      max: 2,
       idleTimeoutMillis: 30_000,
-      connectionTimeoutMillis: 8_000,
-      query_timeout: 15_000,
-      statement_timeout: 12_000,
+      connectionTimeoutMillis: 20_000,
+      query_timeout: 25_000,
+      statement_timeout: 20_000,
       keepAlive: true,
       allowExitOnIdle: true,
       ssl: process.env.MAYOR_DATABASE_SSL === "false" ? undefined : { rejectUnauthorized: false },
@@ -45,7 +45,7 @@ async function query<T extends QueryResultRow>(text: string) {
     return (await pool().query<T>(text)).rows;
   } catch (error) {
     if (!isTransientDatabaseError(error)) throw error;
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     return (await pool().query<T>(text)).rows;
   }
 }
