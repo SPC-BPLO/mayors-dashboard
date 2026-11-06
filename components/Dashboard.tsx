@@ -176,8 +176,6 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
   const [selectedMetric, setSelectedMetric] = useState<DepartmentDashboard["metrics"][number] | null>(null);
   const [collectionPeriod, setCollectionPeriod] = useState<"3m" | "6m" | "1y" | "lifetime">("3m");
   const [dataState, setDataState] = useState<"loading" | "ready" | "delayed" | "error">(initialData ? "ready" : "error");
-  const [retryVersion, setRetryVersion] = useState(0);
-  const [isRetrying, setIsRetrying] = useState(false);
   const hasVerifiedData = useRef(Boolean(initialData));
   const metricDialogOpen = Boolean(selectedMetric?.details);
 
@@ -216,7 +214,6 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
       } finally {
         window.clearTimeout(timeout);
         requestInFlight = false;
-        if (active) setIsRetrying(false);
       }
     };
 
@@ -235,7 +232,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
       window.removeEventListener("focus", refreshWhenVisible);
       document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
-  }, [initialData, retryVersion]);
+  }, [initialData]);
 
   useEffect(() => {
     if (!metricDialogOpen) return;
@@ -318,13 +315,6 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
           <section className="maintenanceNotice">
             <span className="maintenanceStatus"><i /> System notice</span>
             <h1>System maintenance</h1>
-            <button type="button" disabled={isRetrying} onClick={() => {
-              setIsRetrying(true);
-              setDataState("error");
-              setRetryVersion((version) => version + 1);
-            }}>
-              {isRetrying ? "Refreshing…" : "Refresh dashboard"}
-            </button>
           </section>
         </div>
       )}
