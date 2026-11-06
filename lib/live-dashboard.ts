@@ -242,7 +242,7 @@ async function ctmoDashboard(): Promise<DepartmentDashboard> {
 }
 
 async function financeDashboard(): Promise<DepartmentDashboard> {
-  const [summaryRows, trendRows, sourceRows] = await Promise.all([
+  const [summaryRows, trendRows, sourceRows, franchiseRows] = await Promise.all([
     query<{
       collected_overall: number;
       collected_month: number;
@@ -320,6 +320,25 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
       AND CASE WHEN payment_date ~ '^\\d{4}-\\d{2}-\\d{2}$' THEN payment_date::date END >= date_trunc('month', NOW() AT TIME ZONE 'Asia/Manila')::date
       AND CASE WHEN payment_date ~ '^\\d{4}-\\d{2}-\\d{2}$' THEN payment_date::date END < date_trunc('month', NOW() AT TIME ZONE 'Asia/Manila')::date + INTERVAL '1 month'
     GROUP BY 1 ORDER BY value DESC,label LIMIT 4`),
+    query<{
+      collected: number;
+      completed: number;
+      payments: number;
+      renewal_amount: number;
+      new_amount: number;
+      transfer_amount: number;
+      completed_today: number;
+      collected_today: number;
+    }>(`SELECT
+      COALESCE(SUM(amount) FILTER (WHERE lower(status)='completed'),0)::float AS collected,
+      COUNT(*) FILTER (WHERE lower(status)='completed')::int AS completed,
+      COUNT(*) FILTER (WHERE lower(status)='completed' AND amount > 0)::int AS payments,
+      COALESCE(SUM(amount) FILTER (WHERE lower(status)='completed' AND lower(transaction_type)='renewal'),0)::float AS renewal_amount,
+      COALESCE(SUM(amount) FILTER (WHERE lower(status)='completed' AND lower(transaction_type)='new franchise'),0)::float AS new_amount,
+      COALESCE(SUM(amount) FILTER (WHERE lower(status)='completed' AND lower(transaction_type)='ownership transfer'),0)::float AS transfer_amount,
+      COUNT(*) FILTER (WHERE lower(status)='completed' AND (COALESCE(processed_at,created_at) AT TIME ZONE 'Asia/Manila')::date = (NOW() AT TIME ZONE 'Asia/Manila')::date)::int AS completed_today,
+      COALESCE(SUM(amount) FILTER (WHERE lower(status)='completed' AND (COALESCE(processed_at,created_at) AT TIME ZONE 'Asia/Manila')::date = (NOW() AT TIME ZONE 'Asia/Manila')::date),0)::float AS collected_today
+    FROM franchise_transactions`),
   ]);
 
   const summary = summaryRows[0] ?? { collected_overall: 0, collected_month: 0, collected_previous_month: 0, settled_month: 0, receipts_month: 0, highest_daily_collection: 0, highest_daily_transactions: 0, active_collection_days: 0, daily_collection: 0, daily_settled: 0, elapsed_days: 1, cohort_settled: 0, cohort_unsettled: 0 };
@@ -329,13 +348,13 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
   const issued = settled + unsettled;
   const elapsedDays = Math.max(count(summary.elapsed_days), 1);
   const averageDailyCollection = collected / elapsedDays;
-  const averageDailyTransactions = count(summary.settled_month) / elapsedDays;
   const averageDailySettled = settled / elapsedDays;
   const averageDailyUnsettled = unsettled / elapsedDays;
   const averageDailyIssued = issued / elapsedDays;
   const averagePayment = count(summary.settled_month) > 0 ? collected / count(summary.settled_month) : 0;
   const dailyCollection = number(summary.daily_collection);
   const dailySettled = count(summary.daily_settled);
+  const franchise = franchiseRows[0] ?? { collected: 0, completed: 0, payments: 0, renewal_amount: 0, new_amount: 0, transfer_amount: 0, completed_today: 0, collected_today: 0 };
   const periodDefinitions = [
     { period: "3m" as const, label: "3 months", months: 3 },
     { period: "6m" as const, label: "6 months", months: 6 },
@@ -361,10 +380,10 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
     id: "cto",
     short: "CTO",
     name: "Finance–Cashier",
-    reportTitle: "Daily violation-fee activity",
+    reportTitle: "Finance and collections",
     metrics: [
-      { label: "Average daily collection", value: formatMoney(averageDailyCollection), details: [
-        { label: "Daily collection", value: formatMoney(dailyCollection) },
+      { label: "Violation collection today", value: formatMoney(dailyCollection), details: [
+        { label: "Average daily collection", value: formatMoney(averageDailyCollection) },
         { label: "Average payment", value: formatMoney(averagePayment) },
         { label: "Active collection days", value: formatCount(summary.active_collection_days) },
       ] },
@@ -373,15 +392,15 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
         { label: "Average settled daily", value: formatCount(averageDailySettled) },
         { label: "Average payment", value: formatMoney(averagePayment) },
       ] },
-      { label: "Average daily unsettled tickets", value: formatCount(averageDailyUnsettled), details: [
-        { label: "Average tickets issued daily", value: formatCount(averageDailyIssued) },
-        { label: "Average settled daily", value: formatCount(averageDailySettled) },
-        { label: "Average unsettled daily", value: formatCount(averageDailyUnsettled) },
+      { label: "Franchise collections", value: formatMoney(franchise.collected), details: [
+        { label: "Renewals", value: formatMoney(franchise.renewal_amount) },
+        { label: "New franchises", value: formatMoney(franchise.new_amount) },
+        { label: "Ownership transfers", value: formatMoney(franchise.transfer_amount) },
       ] },
-      { label: "Daily collection", value: formatMoney(dailyCollection), details: [
-        { label: "Average daily collection", value: formatMoney(averageDailyCollection) },
-        { label: "Average daily transactions", value: formatCount(averageDailyTransactions) },
-        { label: "Active collection days", value: formatCount(summary.active_collection_days) },
+      { label: "Franchise transactions", value: formatCount(franchise.completed), details: [
+        { label: "Revenue transactions", value: formatCount(franchise.payments) },
+        { label: "Completed today", value: formatCount(franchise.completed_today) },
+        { label: "Collected today", value: formatMoney(franchise.collected_today) },
       ] },
     ],
     trend: {
