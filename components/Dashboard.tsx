@@ -317,19 +317,14 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
         <div className="maintenanceOverlay" role="alert" aria-live="assertive">
           <section className="maintenanceNotice">
             <span className="maintenanceStatus"><i /> System notice</span>
-            <h1>Dashboard temporarily unavailable</h1>
-            <p>
-              The live database cannot be reached right now. No demonstration values are being shown,
-              so the figures displayed later will remain accurate.
-            </p>
+            <h1>System maintenance</h1>
             <button type="button" disabled={isRetrying} onClick={() => {
               setIsRetrying(true);
               setDataState("error");
               setRetryVersion((version) => version + 1);
             }}>
-              {isRetrying ? "Retrying connection…" : "Retry live connection"}
+              {isRetrying ? "Refreshing…" : "Refresh dashboard"}
             </button>
-            <small>The dashboard will also reconnect automatically.</small>
           </section>
         </div>
       )}
