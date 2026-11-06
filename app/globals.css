@@ -715,20 +715,17 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .rankingPanel{padding-top:11px;padding-bottom:11px}
 }
 
-/* Live-fetch feedback floats above the interface and never shifts report content. */
+/* Live-fetch feedback uses the empty top-right header space and never covers data. */
 .liveDataNotice{
-  position:fixed;
-  z-index:90;
-  top:124px;
-  right:clamp(18px,4vw,64px);
-  width:min(390px,calc(100vw - 36px));
-  margin:0;
-  padding:11px 14px;
+  position:static;
+  width:min(360px,52vw);
+  margin-left:auto;
+  padding:9px 12px;
   background:rgba(255,255,255,.94);
   border:1px solid #d7e2dd;
   border-left:4px solid var(--report-green);
   border-radius:8px;
-  box-shadow:0 14px 35px rgba(28,58,49,.16);
+  box-shadow:0 7px 18px rgba(28,58,49,.11);
   backdrop-filter:blur(16px);
   -webkit-backdrop-filter:blur(16px);
   animation:liveNoticeIn .2s ease-out both;
@@ -766,7 +763,9 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
 }
 .liveDataNotice.error{border-left-color:#b77a28}
 @keyframes liveNoticeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:660px){.liveDataNotice{top:118px;right:12px;width:calc(100vw - 24px)}}
+@media(max-width:660px){
+  .liveDataNotice{width:min(56vw,245px);padding:7px 9px;font-size:10px;line-height:1.35}
+}
 @media(prefers-reduced-motion:reduce){.liveDataNotice{animation:none}}
 
 /* Civic data strip: flat, report-like statistics without template card effects. */

@@ -284,6 +284,11 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
           <span>San Pablo City</span>
           <strong>Mayor&apos;s Dashboard</strong>
         </div>
+        {dataState !== "ready" && (
+          <div className={`liveDataNotice ${dataState}`} role="status">
+            {dataState === "loading" ? "Loading live departmental data…" : "Live data unavailable. No demonstration values are being shown."}
+          </div>
+        )}
       </header>
 
       <nav className="departmentSwitcher" aria-label="Department reports" role="tablist">
@@ -318,12 +323,6 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
             <h1>{department.reportTitle}</h1>
           </div>
         </div>
-
-        {dataState !== "ready" && (
-          <div className={`liveDataNotice ${dataState}`} role="status">
-            {dataState === "loading" ? "Loading live departmental data…" : "Live data unavailable. No demonstration values are being shown."}
-          </div>
-        )}
 
         <section className={`reportMetrics metrics-${department.metrics.length}${department.id === "cto" ? " compactMetrics" : ""}`} aria-label={`${department.short} summary statistics`}>
           {department.metrics.map((metric) => (
