@@ -804,3 +804,41 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .reportMetrics.metrics-3 article{border-bottom:0}
   .reportMetrics.metrics-3 article:last-child{border-right:0}
 }
+
+/* Quiet depth for department cards: distinct, civic, and still mostly flat. */
+.reportMetrics{
+  gap:12px;
+  overflow:visible;
+  background:transparent;
+  border:0;
+  border-radius:0;
+}
+.reportMetrics article,
+.reportMetrics article:hover{
+  background:#fff;
+  border:1px solid #d8dfdb;
+  border-radius:8px;
+  box-shadow:0 7px 18px rgba(28,58,49,.10);
+}
+.reportMetrics article:last-child{border-right:1px solid #d8dfdb}
+.reportMetrics article.interactiveMetric:hover{
+  background:#fbfcfb;
+  border-color:#bdc9c4;
+  box-shadow:0 10px 22px rgba(28,58,49,.13);
+}
+.analyticsPanel{
+  box-shadow:0 9px 24px rgba(28,58,49,.10);
+}
+
+@media(max-width:660px){
+  .reportMetrics,.reportMetrics.metrics-3{gap:10px;border-radius:0}
+  .reportMetrics article,
+  .reportMetrics.metrics-3 article,
+  .reportMetrics:not(.metrics-3) article:nth-child(2n),
+  .reportMetrics:not(.metrics-3) article:nth-last-child(-n+2){
+    border:1px solid #d8dfdb;
+    border-radius:8px;
+    box-shadow:0 6px 16px rgba(28,58,49,.095);
+  }
+  .analyticsPanel{box-shadow:0 7px 19px rgba(28,58,49,.09)}
+}

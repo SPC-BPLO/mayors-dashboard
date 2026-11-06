@@ -253,6 +253,7 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
       highest_daily_transactions: number;
       active_collection_days: number;
       daily_collection: number;
+      daily_settled: number;
       elapsed_days: number;
       cohort_settled: number;
       cohort_unsettled: number;
@@ -281,6 +282,7 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
       COALESCE((SELECT MAX(transactions) FROM daily),0)::int AS highest_daily_transactions,
       COALESCE((SELECT COUNT(*) FROM daily WHERE transactions > 0),0)::int AS active_collection_days,
       COALESCE(SUM(amount) FILTER (WHERE status='Settled' AND paid_on = (NOW() AT TIME ZONE 'Asia/Manila')::date),0)::float AS daily_collection,
+      COUNT(*) FILTER (WHERE status='Settled' AND paid_on = (NOW() AT TIME ZONE 'Asia/Manila')::date)::int AS daily_settled,
       EXTRACT(DAY FROM NOW() AT TIME ZONE 'Asia/Manila')::int AS elapsed_days,
       COUNT(*) FILTER (WHERE status='Settled' AND apprehended_on >= month_start AND apprehended_on < month_start + INTERVAL '1 month')::int AS cohort_settled,
       COUNT(*) FILTER (WHERE status<>'Settled' AND apprehended_on >= month_start AND apprehended_on < month_start + INTERVAL '1 month')::int AS cohort_unsettled
@@ -320,7 +322,7 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
     GROUP BY 1 ORDER BY value DESC,label LIMIT 4`),
   ]);
 
-  const summary = summaryRows[0] ?? { collected_overall: 0, collected_month: 0, collected_previous_month: 0, settled_month: 0, receipts_month: 0, highest_daily_collection: 0, highest_daily_transactions: 0, active_collection_days: 0, daily_collection: 0, elapsed_days: 1, cohort_settled: 0, cohort_unsettled: 0 };
+  const summary = summaryRows[0] ?? { collected_overall: 0, collected_month: 0, collected_previous_month: 0, settled_month: 0, receipts_month: 0, highest_daily_collection: 0, highest_daily_transactions: 0, active_collection_days: 0, daily_collection: 0, daily_settled: 0, elapsed_days: 1, cohort_settled: 0, cohort_unsettled: 0 };
   const collected = number(summary.collected_month);
   const settled = count(summary.cohort_settled);
   const unsettled = count(summary.cohort_unsettled);
@@ -332,8 +334,8 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
   const averageDailyUnsettled = unsettled / elapsedDays;
   const averageDailyIssued = issued / elapsedDays;
   const averagePayment = count(summary.settled_month) > 0 ? collected / count(summary.settled_month) : 0;
-  const averageDailyReceipts = count(summary.receipts_month) / elapsedDays;
   const dailyCollection = number(summary.daily_collection);
+  const dailySettled = count(summary.daily_settled);
   const periodDefinitions = [
     { period: "3m" as const, label: "3 months", months: 3 },
     { period: "6m" as const, label: "6 months", months: 6 },
@@ -366,10 +368,10 @@ async function financeDashboard(): Promise<DepartmentDashboard> {
         { label: "Average payment", value: formatMoney(averagePayment) },
         { label: "Active collection days", value: formatCount(summary.active_collection_days) },
       ] },
-      { label: "Average daily settled tickets", value: formatCount(averageDailySettled), details: [
-        { label: "Average daily receipts", value: formatCount(averageDailyReceipts) },
+      { label: "Tickets settled today", value: formatCount(dailySettled), details: [
+        { label: "Daily collection", value: formatMoney(dailyCollection) },
+        { label: "Average settled daily", value: formatCount(averageDailySettled) },
         { label: "Average payment", value: formatMoney(averagePayment) },
-        { label: "Active collection days", value: formatCount(summary.active_collection_days) },
       ] },
       { label: "Average daily unsettled tickets", value: formatCount(averageDailyUnsettled), details: [
         { label: "Average tickets issued daily", value: formatCount(averageDailyIssued) },

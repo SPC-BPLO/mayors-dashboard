@@ -7,7 +7,7 @@ const monthLabels = ["—", "—", "—", "—", "—", "—"];
 const emptyDepartments: DepartmentDashboard[] = [
   { id: "bplo", short: "BPLO", name: "Franchise", reportTitle: "Franchise records", metrics: ["Active franchises", "Expiring in 30 days", "MTOPs due for revocation", "MTOP slots available"].map((label) => ({ label, value: "—" })), trend: { title: "Active franchise trend", labels: monthLabels, values: [0, 0, 0, 0, 0, 0] }, distribution: { title: "Franchise status", centerValue: "—", centerLabel: "records", items: [] }, ranking: { title: "Key franchise records", items: [] } },
   { id: "ctmo", short: "CTMO", name: "Traffic Violations", reportTitle: "Traffic violation records", metrics: ["Violations recorded", "Tickets settled", "Repeat offenders"].map((label) => ({ label, value: "—" })), trend: { title: "Monthly violation trend", labels: monthLabels, values: [0, 0, 0, 0, 0, 0] }, distribution: { title: "Ticket resolution", centerValue: "—", centerLabel: "tickets", items: [] }, ranking: { title: "Most recorded violations", items: [] } },
-  { id: "cto", short: "CTO", name: "Finance–Cashier", reportTitle: "Daily violation-fee activity", metrics: ["Average daily collection", "Average daily settled tickets", "Average daily unsettled tickets", "Daily collection"].map((label) => ({ label, value: "—" })), trend: { title: "Daily collections — last 7 days", labels: monthLabels, values: [0, 0, 0, 0, 0, 0], valueSuffix: "K" }, distribution: { title: "Average daily ticket activity", centerValue: "—", centerLabel: "tickets/day", items: [] }, ranking: { title: "Average daily collections by category", items: [] } },
+  { id: "cto", short: "CTO", name: "Finance–Cashier", reportTitle: "Daily violation-fee activity", metrics: ["Average daily collection", "Tickets settled today", "Average daily unsettled tickets", "Daily collection"].map((label) => ({ label, value: "—" })), trend: { title: "Daily collections — last 7 days", labels: monthLabels, values: [0, 0, 0, 0, 0, 0], valueSuffix: "K" }, distribution: { title: "Average daily ticket activity", centerValue: "—", centerLabel: "tickets/day", items: [] }, ranking: { title: "Average daily collections by category", items: [] } },
 ];
 
 const chartColors = ["#147d64", "#ef6b3a", "#f2a7b8", "#9dcfb9", "#dfe9e3"];
@@ -87,7 +87,7 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
           const tooltipY = Math.max(y - 56, 4);
           return (
           <g
-            key={`${trend.labels[index]}-${value}`}
+            key={`${trend.labels[index]}-${value}-${index}`}
             onBlur={() => setHoveredPoint(null)}
             onFocus={() => setHoveredPoint(index)}
             onMouseEnter={() => setHoveredPoint(index)}
