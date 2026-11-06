@@ -312,8 +312,10 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
       </nav>
 
       <div className="mayorGreetingBand" aria-label="Mabuhay Mayora">
-        <span>Mabuhay</span>
-        <strong>Mayora</strong>
+        <div className="mayorGreetingContent">
+          <span>Mabuhay</span>
+          <strong>Mayora</strong>
+        </div>
       </div>
 
       <main className="departmentReport" id="department-report" key={department.id} role="tabpanel">
