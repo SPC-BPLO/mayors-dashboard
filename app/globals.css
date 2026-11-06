@@ -553,8 +553,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   background:#176b55;
   border-bottom:1px solid #115b48;
 }
-.mayorGreetingBand span{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.78}
-.mayorGreetingBand strong{font-size:21px;font-weight:700;letter-spacing:-.025em}
+.mayorGreetingBand span,.mayorGreetingBand strong{color:#fff;font-size:23px;font-weight:700;letter-spacing:-.025em;line-height:1.1}
 .departmentSwitcher{
   align-items:stretch;
   gap:22px;
@@ -658,8 +657,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .departmentSwitcher button:hover,.departmentSwitcher button.active{background:transparent;border:0;box-shadow:none}
   .departmentSwitcher button::before{right:5px;left:5px}
   .mayorGreetingBand{min-height:46px;padding:9px 18px}
-  .mayorGreetingBand span{font-size:9px}
-  .mayorGreetingBand strong{font-size:20px}
+  .mayorGreetingBand span,.mayorGreetingBand strong{font-size:21px}
   .departmentReport{padding:22px 18px 38px}
   .reportMetrics article{min-height:100px;padding:14px;border-radius:7px}
   .analyticsPanel{padding:15px;border-radius:7px}
