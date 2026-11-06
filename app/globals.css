@@ -733,6 +733,28 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   -webkit-backdrop-filter:blur(16px);
   animation:liveNoticeIn .2s ease-out both;
 }
+
+/* Mobile collection periods remain completely stationary when selected. */
+@media(max-width:660px){
+  .trendPanelWithPeriods .collectionHeading>h2{
+    display:flex;
+    align-items:flex-end;
+    min-height:42px;
+  }
+  .collectionPeriods button,
+  .collectionPeriods button:hover,
+  .collectionPeriods button:focus-visible,
+  .collectionPeriods button.active{
+    appearance:none;
+    contain:layout paint;
+    outline:0;
+    transform:none;
+    transition:none!important;
+  }
+  .collectionPeriods button::before{display:none;transition:none}
+  .collectionPeriods button.active,
+  .collectionPeriods button:focus-visible{box-shadow:inset 0 -3px 0 #16876a}
+}
 .liveDataNotice.error{border-left-color:#b77a28}
 @keyframes liveNoticeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:660px){.liveDataNotice{top:118px;right:12px;width:calc(100vw - 24px)}}
