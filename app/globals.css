@@ -736,10 +736,19 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
 
 /* Mobile collection periods remain completely stationary when selected. */
 @media(max-width:660px){
+  .trendPanelWithPeriods .collectionHeading{
+    grid-template-columns:minmax(0,1fr);
+    width:100%;
+  }
   .trendPanelWithPeriods .collectionHeading>h2{
     display:flex;
     align-items:flex-end;
     min-height:42px;
+  }
+  .collectionPeriods{
+    justify-self:stretch;
+    width:100%;
+    min-width:0;
   }
   .collectionPeriods button,
   .collectionPeriods button:hover,
