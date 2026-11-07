@@ -355,17 +355,15 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
             </header>
             <div className="maintenanceCopy">
               <h1 id="maintenance-title">System maintenance</h1>
-              <p>We are performing essential maintenance on the Mayor&apos;s Dashboard. Live departmental statistics are temporarily unavailable.</p>
-              <p>We apologize for the inconvenience and appreciate your patience while service is restored.</p>
+              <p>The Mayor&apos;s Dashboard is temporarily unavailable.</p>
             </div>
             <div className="maintenanceUpdate">
               <span>Tentative maintenance window</span>
               <strong><time dateTime="2026-11-08T00:00:00+08:00">November 8, 2026 · 12:00 AM–4:00 AM PHT</time></strong>
-              <p>The schedule may change as restoration work progresses. This page will reopen automatically after live figures are verified.</p>
+              <p>Please check again after the scheduled maintenance.</p>
             </div>
             <footer className="maintenanceFooter">
               <span>City Government of San Pablo</span>
-              <span>No action is required</span>
             </footer>
           </section>
         </div>
