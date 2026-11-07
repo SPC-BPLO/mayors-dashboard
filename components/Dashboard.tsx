@@ -175,7 +175,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
   const [selectedDepartment, setSelectedDepartment] = useState<DepartmentId>("bplo");
   const [selectedMetric, setSelectedMetric] = useState<DepartmentDashboard["metrics"][number] | null>(null);
   const [collectionPeriod, setCollectionPeriod] = useState<"3m" | "6m" | "1y" | "lifetime">("3m");
-  const [dataState, setDataState] = useState<"loading" | "ready" | "delayed" | "error">(initialData ? "ready" : "error");
+  const [dataState, setDataState] = useState<"loading" | "ready" | "delayed" | "error">(initialData ? "ready" : "loading");
   const hasVerifiedData = useRef(Boolean(initialData));
   const metricDialogOpen = Boolean(selectedMetric?.details);
 
@@ -349,8 +349,23 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
       {dataState === "error" && (
         <div className="maintenanceOverlay" role="alertdialog" aria-live="assertive" aria-modal="true" aria-labelledby="maintenance-title">
           <section className="maintenanceNotice">
-            <span className="maintenanceStatus"><i /> System notice</span>
-            <h1 id="maintenance-title">System maintenance</h1>
+            <header className="maintenanceHeader">
+              <span className="maintenanceStatus"><i /> Service temporarily unavailable</span>
+              <span className="maintenanceBrand">San Pablo City</span>
+            </header>
+            <div className="maintenanceCopy">
+              <h1 id="maintenance-title">System maintenance in progress</h1>
+              <p>Live departmental statistics are temporarily unavailable while we restore the secure data connection.</p>
+            </div>
+            <div className="maintenanceUpdate">
+              <span>Service status</span>
+              <strong>Restoring live data</strong>
+              <p>The dashboard will reopen automatically after the latest figures are verified.</p>
+            </div>
+            <footer className="maintenanceFooter">
+              <span>Mayor&apos;s Dashboard</span>
+              <span>No action is required</span>
+            </footer>
           </section>
         </div>
       )}
