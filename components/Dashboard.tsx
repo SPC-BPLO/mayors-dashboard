@@ -237,11 +237,16 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
   useEffect(() => {
     if (dataState !== "error") return;
 
+    const scrollPosition = window.scrollY;
     const root = document.documentElement;
     const body = document.body;
     const previousRootOverflow = root.style.overflow;
     const previousRootOverscroll = root.style.overscrollBehavior;
     const previousBodyOverflow = body.style.overflow;
+    const previousBodyPosition = body.style.position;
+    const previousBodyTop = body.style.top;
+    const previousBodyLeft = body.style.left;
+    const previousBodyWidth = body.style.width;
     const previousBodyOverscroll = body.style.overscrollBehavior;
     const previousBodyTouchAction = body.style.touchAction;
     const dashboard = document.querySelector<HTMLElement>(".reportDashboard");
@@ -252,21 +257,43 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
     root.style.overflow = "hidden";
     root.style.overscrollBehavior = "none";
     body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollPosition}px`;
+    body.style.left = "0";
+    body.style.width = "100%";
     body.style.overscrollBehavior = "none";
     body.style.touchAction = "none";
     blockedSections.forEach((section) => {
       section.inert = true;
     });
 
+    const stopScrolling = (event: Event) => event.preventDefault();
+    const stopScrollKeys = (event: KeyboardEvent) => {
+      if (["ArrowDown", "ArrowUp", "End", "Home", "PageDown", "PageUp", " "].includes(event.key)) {
+        event.preventDefault();
+      }
+    };
+    window.addEventListener("wheel", stopScrolling, { passive: false });
+    window.addEventListener("touchmove", stopScrolling, { passive: false });
+    window.addEventListener("keydown", stopScrollKeys);
+
     return () => {
+      window.removeEventListener("wheel", stopScrolling);
+      window.removeEventListener("touchmove", stopScrolling);
+      window.removeEventListener("keydown", stopScrollKeys);
       root.style.overflow = previousRootOverflow;
       root.style.overscrollBehavior = previousRootOverscroll;
       body.style.overflow = previousBodyOverflow;
+      body.style.position = previousBodyPosition;
+      body.style.top = previousBodyTop;
+      body.style.left = previousBodyLeft;
+      body.style.width = previousBodyWidth;
       body.style.overscrollBehavior = previousBodyOverscroll;
       body.style.touchAction = previousBodyTouchAction;
       blockedSections.forEach((section) => {
         section.inert = false;
       });
+      window.scrollTo(0, scrollPosition);
     };
   }, [dataState]);
 
@@ -329,7 +356,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
   }, [collectionPeriod, department.trend]);
 
   return (
-    <div className="reportDashboard">
+    <div className={`reportDashboard${dataState === "error" ? " maintenanceMode" : ""}`}>
       <header className="reportTopbar">
         <div className="reportBrand">
           <span>San Pablo City</span>
