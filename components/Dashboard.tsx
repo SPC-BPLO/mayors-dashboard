@@ -355,12 +355,12 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
             </header>
             <div className="maintenanceCopy">
               <h1 id="maintenance-title">System maintenance</h1>
-              <p>The Mayor&apos;s Dashboard is temporarily unavailable.</p>
+              <p>The Mayor&apos;s Dashboard is undergoing scheduled maintenance.</p>
             </div>
             <div className="maintenanceUpdate">
-              <span>Tentative maintenance window</span>
+              <span>Expected maintenance window</span>
               <strong><time dateTime="2026-11-08T00:00:00+08:00">November 8, 2026 · 12:00 AM–4:00 AM PHT</time></strong>
-              <p>Please check again after the scheduled maintenance.</p>
+              <p>Thank you for your patience.</p>
             </div>
             <footer className="maintenanceFooter">
               <span>City Government of San Pablo</span>
