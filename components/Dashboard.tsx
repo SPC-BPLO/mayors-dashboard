@@ -359,9 +359,9 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
               <p>We apologize for the inconvenience and appreciate your patience while service is restored.</p>
             </div>
             <div className="maintenanceUpdate">
-              <span>Live data service</span>
-              <strong>Restoration in progress</strong>
-              <p>This page checks the connection automatically and will reopen after the latest figures are verified.</p>
+              <span>Tentative maintenance window</span>
+              <strong><time dateTime="2026-11-08T00:00:00+08:00">November 8, 2026 · 12:00 AM–4:00 AM PHT</time></strong>
+              <p>The schedule may change as restoration work progresses. This page will reopen automatically after live figures are verified.</p>
             </div>
             <footer className="maintenanceFooter">
               <span>City Government of San Pablo</span>
