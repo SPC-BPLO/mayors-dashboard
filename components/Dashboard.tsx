@@ -350,20 +350,21 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
         <div className="maintenanceOverlay" role="alertdialog" aria-live="assertive" aria-modal="true" aria-labelledby="maintenance-title">
           <section className="maintenanceNotice">
             <header className="maintenanceHeader">
-              <span className="maintenanceStatus"><i /> Service temporarily unavailable</span>
+              <span className="maintenanceStatus"><i /> Maintenance in progress</span>
               <span className="maintenanceBrand">San Pablo City</span>
             </header>
             <div className="maintenanceCopy">
-              <h1 id="maintenance-title">System maintenance in progress</h1>
-              <p>Live departmental statistics are temporarily unavailable while we restore the secure data connection.</p>
+              <h1 id="maintenance-title">System maintenance</h1>
+              <p>We are performing essential maintenance on the Mayor&apos;s Dashboard. Live departmental statistics are temporarily unavailable.</p>
+              <p>We apologize for the inconvenience and appreciate your patience while service is restored.</p>
             </div>
             <div className="maintenanceUpdate">
-              <span>Service status</span>
-              <strong>Restoring live data</strong>
-              <p>The dashboard will reopen automatically after the latest figures are verified.</p>
+              <span>Live data service</span>
+              <strong>Restoration in progress</strong>
+              <p>This page checks the connection automatically and will reopen after the latest figures are verified.</p>
             </div>
             <footer className="maintenanceFooter">
-              <span>Mayor&apos;s Dashboard</span>
+              <span>City Government of San Pablo</span>
               <span>No action is required</span>
             </footer>
           </section>
