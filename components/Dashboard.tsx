@@ -385,8 +385,8 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
               <p>The Mayor&apos;s Dashboard is undergoing scheduled maintenance.</p>
             </div>
             <div className="maintenanceUpdate">
-              <span>Expected maintenance window</span>
-              <strong><time dateTime="2026-11-08T00:00:00+08:00">November 8, 2026 · 12:00 AM–4:00 AM PHT</time></strong>
+              <span>Service resumes by</span>
+              <strong><time dateTime="2026-11-08T04:00:00+08:00">November 8, 2026 · 4:00 AM PHT</time></strong>
               <p>Thank you for your patience.</p>
             </div>
             <footer className="maintenanceFooter">
