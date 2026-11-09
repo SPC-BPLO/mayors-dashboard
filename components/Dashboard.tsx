@@ -412,7 +412,6 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
           <section className="maintenanceNotice">
             <header className="maintenanceHeader">
               <span className="maintenanceStatus"><i /> Maintenance in progress</span>
-              <span className="maintenanceBrand">San Pablo City</span>
             </header>
             <div className="maintenanceCopy">
               <h1 id="maintenance-title">System maintenance</h1>
