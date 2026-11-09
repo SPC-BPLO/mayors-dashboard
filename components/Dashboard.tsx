@@ -11,6 +11,30 @@ const emptyDepartments: DepartmentDashboard[] = [
 ];
 
 const chartColors = ["#147d64", "#ef6b3a", "#f2a7b8", "#9dcfb9", "#dfe9e3"];
+const maintenanceStartResumeAt = new Date("2026-11-08T04:00:00+08:00").getTime();
+const maintenanceExtensionMs = 4 * 60 * 60 * 1000;
+
+function getNextMaintenanceResumeAt(now = Date.now()) {
+  if (now < maintenanceStartResumeAt) return new Date(maintenanceStartResumeAt);
+  const elapsedWindows = Math.floor((now - maintenanceStartResumeAt) / maintenanceExtensionMs) + 1;
+  return new Date(maintenanceStartResumeAt + elapsedWindows * maintenanceExtensionMs);
+}
+
+function formatMaintenanceResumeAt(date: Date) {
+  const dateText = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Manila",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+  const timeText = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Manila",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(date);
+  return `${dateText} · ${timeText} PHT`;
+}
 
 function MetricValue({ value }: { value: string }) {
   const match = value.match(/^(.*?)([BM])$/);
@@ -176,6 +200,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
   const [selectedMetric, setSelectedMetric] = useState<DepartmentDashboard["metrics"][number] | null>(null);
   const [collectionPeriod, setCollectionPeriod] = useState<"3m" | "6m" | "1y" | "lifetime">("3m");
   const [dataState, setDataState] = useState<"loading" | "ready" | "delayed" | "error">(initialData ? "ready" : "loading");
+  const [maintenanceResumeAt, setMaintenanceResumeAt] = useState(getNextMaintenanceResumeAt);
   const hasVerifiedData = useRef(Boolean(initialData));
   const metricDialogOpen = Boolean(selectedMetric?.details);
 
@@ -233,6 +258,14 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
       document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
   }, [initialData]);
+
+  useEffect(() => {
+    if (dataState !== "error") return;
+    const updateResumeAt = () => setMaintenanceResumeAt(getNextMaintenanceResumeAt());
+    updateResumeAt();
+    const estimateRefresh = window.setInterval(updateResumeAt, 60_000);
+    return () => window.clearInterval(estimateRefresh);
+  }, [dataState]);
 
   useEffect(() => {
     if (dataState !== "error") return;
@@ -384,9 +417,16 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
               <h1 id="maintenance-title">System maintenance</h1>
               <p>The Mayor&apos;s Dashboard is undergoing scheduled maintenance.</p>
             </div>
+            <div className="maintenanceIllustration" aria-hidden="true">
+              <svg className="maintenanceWarningIcon" viewBox="0 0 24 24" fill="none">
+                <path d="M10.3 2.9 1.8 17.1A2 2 0 0 0 3.5 20h17a2 2 0 0 0 1.7-2.9L13.7 2.9a2 2 0 0 0-3.4 0Z" />
+                <path d="M12 8v5" />
+                <path d="M12 16.8h.01" />
+              </svg>
+            </div>
             <div className="maintenanceUpdate">
               <span>Service resumes by</span>
-              <strong><time dateTime="2026-11-08T04:00:00+08:00">November 8, 2026 · 4:00 AM PHT</time></strong>
+              <strong><time dateTime={maintenanceResumeAt.toISOString()}>{formatMaintenanceResumeAt(maintenanceResumeAt)}</time></strong>
               <p>Thank you for your patience.</p>
             </div>
             <footer className="maintenanceFooter">
