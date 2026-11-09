@@ -11,19 +11,11 @@ const emptyDepartments: DepartmentDashboard[] = [
 ];
 
 const chartColors = ["#147d64", "#ef6b3a", "#f2a7b8", "#9dcfb9", "#dfe9e3"];
-const maintenanceStartResumeAt = new Date("2026-11-08T04:00:00+08:00").getTime();
-const maintenanceExtensionMs = 4 * 60 * 60 * 1000;
+const maintenanceResumeAt = new Date("2026-11-11T08:00:00+08:00");
 
-// Flip to true once we're confident service will be back by Wednesday 8 AM.
-// While false, the notice says "Service may resume on" with the rolling estimate.
+// Flip to true once we're confident service will be back by then.
+// While false, the notice says "Service may resume on"; when true, "Service resumes by".
 const maintenanceResumeConfirmed = false;
-const maintenanceConfirmedResumeAt = new Date("2026-11-11T08:00:00+08:00");
-
-function getNextMaintenanceResumeAt(now = Date.now()) {
-  if (now < maintenanceStartResumeAt) return new Date(maintenanceStartResumeAt);
-  const elapsedWindows = Math.floor((now - maintenanceStartResumeAt) / maintenanceExtensionMs) + 1;
-  return new Date(maintenanceStartResumeAt + elapsedWindows * maintenanceExtensionMs);
-}
 
 function formatMaintenanceResumeAt(date: Date) {
   const dateText = new Intl.DateTimeFormat("en-US", {
@@ -207,7 +199,6 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
   const [dataState, setDataState] = useState<"loading" | "ready" | "delayed" | "error">(
     forceMaintenance ? "error" : initialData ? "ready" : "loading",
   );
-  const [maintenanceResumeAt, setMaintenanceResumeAt] = useState(getNextMaintenanceResumeAt);
   const hasVerifiedData = useRef(Boolean(initialData));
   const metricDialogOpen = Boolean(selectedMetric?.details);
 
@@ -270,14 +261,6 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
       document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
   }, [forceMaintenance, initialData]);
-
-  useEffect(() => {
-    if (dataState !== "error") return;
-    const updateResumeAt = () => setMaintenanceResumeAt(getNextMaintenanceResumeAt());
-    updateResumeAt();
-    const estimateRefresh = window.setInterval(updateResumeAt, 60_000);
-    return () => window.clearInterval(estimateRefresh);
-  }, [dataState]);
 
   useEffect(() => {
     if (dataState !== "error") return;
@@ -430,25 +413,12 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
               </svg>
             </div>
             <div className="maintenanceUpdate">
-              {maintenanceResumeConfirmed ? (
-                <>
-                  <span>Service resumes by</span>
-                  <strong>
-                    <time dateTime={maintenanceConfirmedResumeAt.toISOString()}>
-                      {formatMaintenanceResumeAt(maintenanceConfirmedResumeAt)}
-                    </time>
-                  </strong>
-                </>
-              ) : (
-                <>
-                  <span>Service may resume on</span>
-                  <strong>
-                    <time dateTime={maintenanceResumeAt.toISOString()}>
-                      {formatMaintenanceResumeAt(maintenanceResumeAt)}
-                    </time>
-                  </strong>
-                </>
-              )}
+              <span>{maintenanceResumeConfirmed ? "Service resumes by" : "Service may resume on"}</span>
+              <strong>
+                <time dateTime={maintenanceResumeAt.toISOString()}>
+                  {formatMaintenanceResumeAt(maintenanceResumeAt)}
+                </time>
+              </strong>
               <p>Thank you for your patience.</p>
             </div>
             <footer className="maintenanceFooter">
