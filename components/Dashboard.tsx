@@ -194,17 +194,24 @@ function RankingBars({ ranking }: { ranking: DepartmentDashboard["ranking"] }) {
   );
 }
 
-export function Dashboard({ initialData }: { initialData?: MayorDashboardResponse }) {
+export function Dashboard({ initialData, forceMaintenance = false }: { initialData?: MayorDashboardResponse; forceMaintenance?: boolean }) {
   const [departments, setDepartments] = useState<DepartmentDashboard[]>(initialData?.departments ?? emptyDepartments);
   const [selectedDepartment, setSelectedDepartment] = useState<DepartmentId>("bplo");
   const [selectedMetric, setSelectedMetric] = useState<DepartmentDashboard["metrics"][number] | null>(null);
   const [collectionPeriod, setCollectionPeriod] = useState<"3m" | "6m" | "1y" | "lifetime">("3m");
-  const [dataState, setDataState] = useState<"loading" | "ready" | "delayed" | "error">(initialData ? "ready" : "loading");
+  const [dataState, setDataState] = useState<"loading" | "ready" | "delayed" | "error">(
+    forceMaintenance ? "error" : initialData ? "ready" : "loading",
+  );
   const [maintenanceResumeAt, setMaintenanceResumeAt] = useState(getNextMaintenanceResumeAt);
   const hasVerifiedData = useRef(Boolean(initialData));
   const metricDialogOpen = Boolean(selectedMetric?.details);
 
   useEffect(() => {
+    if (forceMaintenance) {
+      setDataState("error");
+      return;
+    }
+
     let active = true;
     let requestInFlight = false;
     const load = async () => {
@@ -257,7 +264,7 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
       window.removeEventListener("focus", refreshWhenVisible);
       document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
-  }, [initialData]);
+  }, [forceMaintenance, initialData]);
 
   useEffect(() => {
     if (dataState !== "error") return;
@@ -395,14 +402,8 @@ export function Dashboard({ initialData }: { initialData?: MayorDashboardRespons
           <span>San Pablo City</span>
           <strong>Mayor&apos;s Dashboard</strong>
         </div>
-        {dataState !== "ready" && dataState !== "error" && (
-          <div className={`liveDataNotice ${dataState}`} role="status">
-            {dataState === "loading"
-              ? "Loading live departmental data…"
-              : dataState === "delayed"
-                ? "Live refresh delayed. Showing the last verified database values."
-                : "Live data unavailable. No demonstration values are being shown."}
-          </div>
+        {dataState === "loading" && (
+          <div className="liveDataNotice loading" role="status">Loading live departmental data…</div>
         )}
       </header>
 
