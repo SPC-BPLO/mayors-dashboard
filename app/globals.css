@@ -887,3 +887,35 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   }
   .analyticsPanel{border-radius:18px;box-shadow:0 13px 28px rgba(28,58,49,.11),inset 0 1px 0 rgba(255,255,255,.96)}
 }
+
+/* Compact proportions for the rounded report-card geometry. */
+.reportMetrics{gap:10px}
+.reportMetrics article,
+.reportMetrics article:hover{
+  min-height:92px;
+  padding:14px 18px;
+  border-radius:18px;
+}
+.analyticsGrid{gap:10px;margin-top:10px}
+.analyticsPanel{padding:16px 18px;border-radius:20px}
+
+@media(min-width:1001px){
+  .reportMetrics article,
+  .reportMetrics article:hover{min-height:72px;padding:9px 16px}
+  .analyticsPanel{padding:13px 16px}
+}
+
+@media(max-width:660px){
+  .reportMetrics,.reportMetrics.metrics-3{gap:8px}
+  .reportMetrics article,
+  .reportMetrics article:hover,
+  .reportMetrics.metrics-3 article,
+  .reportMetrics:not(.metrics-3) article:nth-child(2n),
+  .reportMetrics:not(.metrics-3) article:nth-last-child(-n+2){
+    min-height:86px;
+    padding:11px 13px;
+    border-radius:16px;
+  }
+  .analyticsGrid{gap:9px;margin-top:9px}
+  .analyticsPanel{padding:14px;border-radius:17px}
+}
