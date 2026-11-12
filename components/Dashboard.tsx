@@ -11,7 +11,7 @@ const emptyDepartments: DepartmentDashboard[] = [
 ];
 
 const chartColors = ["#147d64", "#ef6b3a", "#f2a7b8", "#9dcfb9", "#dfe9e3"];
-const maintenanceResumeAt = new Date("2026-11-11T08:00:00+08:00");
+const maintenanceResumeAt = new Date("2026-11-16T17:00:00+08:00");
 
 // Flip to true once we're confident service will be back by then.
 // While false, the notice says "Service may resume on"; when true, "Service resumes by".
