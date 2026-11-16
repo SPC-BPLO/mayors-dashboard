@@ -114,6 +114,126 @@ footer{font-size:11px}
 @media(max-width:660px){.reportMetrics.metrics-3{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:420px){.reportMetrics.metrics-3{grid-template-columns:1fr}}
 
+/* Executive welcome card */
+.mayorGreetingBand{
+  min-height:76px;
+  padding:8px clamp(18px,4vw,64px);
+  background:linear-gradient(90deg,rgba(245,249,247,.82),rgba(235,244,240,.9));
+  border-bottom:1px solid rgba(119,148,137,.2);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 8px 24px rgba(31,72,61,.05);
+}
+.mayorGreetingCard{
+  position:relative;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:14px;
+  width:min(1480px,100%);
+  min-height:60px;
+  overflow:hidden;
+  margin:0 auto;
+  padding:8px 12px 8px 9px;
+  background:linear-gradient(112deg,rgba(255,255,255,.86),rgba(255,255,255,.58));
+  border:1px solid rgba(255,255,255,.94);
+  border-radius:16px;
+  box-shadow:0 12px 32px rgba(31,72,61,.09),inset 0 1px 0 #fff;
+  backdrop-filter:blur(20px) saturate(135%);
+  -webkit-backdrop-filter:blur(20px) saturate(135%);
+}
+.mayorGreetingCard::after{
+  position:absolute;
+  top:-74px;
+  right:12%;
+  width:190px;
+  aspect-ratio:1;
+  background:radial-gradient(circle,rgba(205,166,78,.18),transparent 67%);
+  border-radius:50%;
+  content:"";
+  pointer-events:none;
+}
+.mayorGreetingSeal{
+  position:relative;
+  z-index:1;
+  display:grid;
+  place-items:center;
+  width:44px;
+  height:44px;
+  background:linear-gradient(145deg,#fff,#edf4f0);
+  border:1px solid rgba(23,107,85,.14);
+  border-radius:13px;
+  box-shadow:0 7px 18px rgba(24,88,70,.11);
+}
+.mayorGreetingSeal img{width:34px;height:34px;object-fit:contain}
+.mayorGreetingContent{
+  position:relative;
+  z-index:1;
+  display:grid;
+  align-content:center;
+  gap:2px;
+  min-height:44px;
+}
+.mayorGreetingContent>span{
+  color:#26715d;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+}
+.mayorGreetingContent>div{display:flex;align-items:baseline;gap:11px;min-width:0}
+.mayorGreetingContent strong{
+  padding:0;
+  color:#173f34;
+  font-size:21px;
+  font-weight:750;
+  letter-spacing:-.035em;
+  line-height:1.15;
+  white-space:nowrap;
+}
+.mayorGreetingContent strong::after{display:none}
+.mayorGreetingContent p{
+  overflow:hidden;
+  color:#68756f;
+  font-size:10px;
+  font-weight:600;
+  line-height:1.35;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.mayorGreetingContext{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:auto auto;
+  align-items:center;
+  gap:0 8px;
+  min-width:150px;
+  padding:7px 11px;
+  background:rgba(229,241,236,.72);
+  border:1px solid rgba(23,107,85,.12);
+  border-radius:11px;
+}
+.mayorGreetingContext span{grid-column:1/-1;color:#6d7b75;font-size:7px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.mayorGreetingContext strong{color:#14634f;font-size:13px;font-weight:800;letter-spacing:.03em}
+.mayorGreetingContext small{overflow:hidden;color:#5e6d67;font-size:9px;font-weight:650;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:760px){
+  .mayorGreetingBand{min-height:70px;padding:7px 12px}
+  .mayorGreetingCard{min-height:56px;gap:10px;padding:7px 9px;border-radius:14px}
+  .mayorGreetingSeal{width:40px;height:40px;border-radius:11px}
+  .mayorGreetingSeal img{width:31px;height:31px}
+  .mayorGreetingContent{display:grid;gap:1px}
+  .mayorGreetingContent>div{display:grid;gap:0}
+  .mayorGreetingContent strong{font-size:18px}
+  .mayorGreetingContent p{font-size:9px}
+  .mayorGreetingContext{min-width:0;padding:7px 9px}
+  .mayorGreetingContext small{display:none}
+}
+@media(max-width:480px){
+  .mayorGreetingContent p{display:none}
+  .mayorGreetingContext{display:flex;align-items:center;gap:5px;padding:6px 8px}
+  .mayorGreetingContext span{display:none}
+  .mayorGreetingContext strong{font-size:11px}
+}
+
 /* Refined glassmorphism skin */
 .reportDashboard{position:relative;isolation:isolate;background:linear-gradient(135deg,#eaf4f2 0%,#f5f8f7 46%,#edf4ef 100%)}
 .reportDashboard::before,.reportDashboard::after{position:absolute;z-index:0;width:420px;aspect-ratio:1;border-radius:50%;content:"";filter:blur(18px);opacity:.68;pointer-events:none}
@@ -919,3 +1039,420 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .analyticsGrid{gap:9px;margin-top:9px}
   .analyticsPanel{padding:14px;border-radius:17px}
 }
+
+/* Mobile-first executive greeting: enhance progressively for wider screens. */
+.mayorGreetingBand{
+  min-height:58px;
+  padding:6px 14px;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+.mayorGreetingCard{
+  display:block;
+  min-height:46px;
+  padding:8px 4px;
+  background:transparent;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+.mayorGreetingCard::before{
+  display:none;
+}
+.mayorGreetingCard::after{display:none}
+.mayorGreetingContent{
+  display:flex;
+  align-items:center;
+  min-width:0;
+  min-height:34px;
+}
+.mayorGreetingContent>div{display:block;min-width:0}
+.mayorGreetingContent strong{
+  display:block;
+  overflow:hidden;
+  padding:0;
+  font-size:30px;
+  font-weight:750;
+  letter-spacing:-.035em;
+  line-height:1.08;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.mayorGreetingContent strong::after{display:none}
+.mayorGreetingContent p{display:none}
+.mayorGreetingContext{
+  display:flex;
+  align-items:center;
+  min-width:0;
+  padding:7px 9px;
+  background:rgba(237,243,240,.78);
+  border-color:rgba(23,107,85,.1);
+  border-radius:9px;
+}
+.mayorGreetingContext span,.mayorGreetingContext small{display:none}
+.mayorGreetingContext strong{color:#1a654f;font-size:11px;letter-spacing:.06em;line-height:1}
+.reportHeading h1{font-size:24px;line-height:1.1}
+
+@media(min-width:481px){
+  .mayorGreetingBand{min-height:62px;padding:7px 20px}
+  .mayorGreetingCard{min-height:50px;padding:8px 4px}
+  .mayorGreetingContent strong{font-size:31px}
+  .mayorGreetingContent p{
+    display:block;
+    overflow:hidden;
+    margin-top:2px;
+    color:#6c7772;
+    font-size:9px;
+    font-weight:600;
+    line-height:1.3;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .mayorGreetingContext{display:grid;grid-template-columns:auto auto;gap:0 6px;min-width:112px;padding:7px 9px}
+  .mayorGreetingContext span{display:block;grid-column:1/-1;font-size:6px}
+  .mayorGreetingContext strong{font-size:12px}
+  .mayorGreetingContext small{display:block;font-size:8px}
+  .reportHeading h1{font-size:26px}
+}
+
+@media(min-width:761px){
+  .mayorGreetingBand{min-height:64px;padding:7px clamp(24px,4vw,64px)}
+  .mayorGreetingCard{min-height:52px;padding:9px 4px}
+  .mayorGreetingContent>div{display:flex;align-items:baseline;gap:11px}
+  .mayorGreetingContent strong{flex:none;font-size:36px}
+  .mayorGreetingContent p{margin:0;font-size:10px}
+  .mayorGreetingContext{min-width:150px;padding:7px 11px}
+  .mayorGreetingContext span{font-size:7px}
+  .mayorGreetingContext strong{font-size:13px}
+  .mayorGreetingContext small{font-size:9px}
+  .reportHeading h1{font-size:28px}
+}
+
+/* Curved green department navigation, adapted for touch-first dashboard tabs. */
+.departmentSwitcher{
+  position:relative;
+  z-index:4;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  align-items:stretch;
+  gap:6px;
+  overflow:visible;
+  padding:8px 10px 11px;
+  background:linear-gradient(135deg,#21836a 0%,#146b55 54%,#2b9074 100%);
+  border:0;
+  border-radius:0 0 28px 28px;
+  box-shadow:0 12px 28px rgba(20,107,85,.2),inset 0 1px 0 rgba(255,255,255,.2);
+  clip-path:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+.departmentSwitcher::after{
+  position:absolute;
+  right:12%;
+  bottom:-8px;
+  left:12%;
+  z-index:-1;
+  height:22px;
+  background:rgba(20,107,85,.18);
+  border-radius:0 0 50% 50%;
+  filter:blur(12px);
+  content:"";
+  pointer-events:none;
+}
+.departmentSwitcher button,
+.departmentSwitcher button:hover,
+.departmentSwitcher button.active{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:4px;
+  width:100%;
+  min-width:0;
+  min-height:66px;
+  margin:0;
+  padding:7px 4px;
+  color:rgba(255,255,255,.78);
+  text-align:center;
+  background:transparent;
+  border:1px solid transparent;
+  border-radius:15px;
+  box-shadow:none;
+  clip-path:none;
+  transform:none;
+}
+.departmentSwitcher button::before,.departmentSwitcher button::after{display:none}
+.departmentSwitcher button:hover{color:#fff;background:rgba(255,255,255,.1)}
+.departmentSwitcher button.active{
+  color:#146b55;
+  background:rgba(255,255,255,.97);
+  border-color:rgba(255,255,255,.98);
+  box-shadow:0 9px 22px rgba(12,82,64,.24),inset 0 1px 0 #fff;
+}
+.departmentSwitcher button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.departmentSwitcher .departmentNavIcon{
+  display:grid;
+  place-items:center;
+  width:28px;
+  height:28px;
+  color:inherit;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:9px;
+}
+.departmentSwitcher .departmentNavIcon img{
+  display:block;
+  width:24px;
+  height:24px;
+  object-fit:contain;
+  filter:drop-shadow(0 2px 4px rgba(7,58,44,.16));
+}
+.departmentSwitcher button.active .departmentNavIcon{
+  color:#146b55;
+  background:#eaf6f1;
+  border-color:#d5ebe2;
+}
+.departmentSwitcher .departmentNavLabel{display:grid;gap:0;min-width:0;color:inherit}
+.departmentSwitcher .departmentNavLabel>span{
+  color:inherit;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.11em;
+  line-height:1;
+}
+.departmentSwitcher .departmentNavLabel strong{
+  overflow:hidden;
+  max-width:100%;
+  color:inherit;
+  font-size:9px;
+  font-weight:700;
+  line-height:1.2;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+@media(min-width:661px){
+  .departmentSwitcher{
+    gap:9px;
+    padding:9px clamp(24px,5vw,82px) 12px;
+    border-radius:0 0 36px 36px;
+  }
+  .departmentSwitcher button,
+  .departmentSwitcher button:hover,
+  .departmentSwitcher button.active{
+    justify-content:flex-start;
+    flex-direction:row;
+    gap:10px;
+    min-height:58px;
+    padding:9px 14px;
+    text-align:left;
+    border-radius:17px;
+  }
+  .departmentSwitcher .departmentNavIcon{flex:none;width:36px;height:36px;border-radius:11px}
+  .departmentSwitcher .departmentNavIcon img{width:29px;height:29px}
+  .departmentSwitcher .departmentNavLabel{gap:2px}
+  .departmentSwitcher .departmentNavLabel>span{font-size:9px}
+  .departmentSwitcher .departmentNavLabel strong{font-size:12px}
+}
+
+/* Slide-out department rail */
+.departmentSwitcher{
+  position:fixed;
+  top:76px;
+  bottom:18px;
+  left:0;
+  z-index:60;
+  display:flex;
+  align-items:stretch;
+  grid-template-columns:none;
+  flex-direction:column;
+  gap:7px;
+  width:min(258px,82vw);
+  padding:18px 14px;
+  overflow-y:auto;
+  background:linear-gradient(160deg,#2a8d73 0%,#146b55 52%,#238269 100%);
+  border:1px solid rgba(255,255,255,.2);
+  border-left:0;
+  border-radius:0 34px 34px 0;
+  box-shadow:18px 20px 48px rgba(12,77,60,.27),inset 0 1px 0 rgba(255,255,255,.2);
+  transform:translateX(calc(-100% - 22px));
+  transition:transform .3s cubic-bezier(.2,.75,.2,1);
+  visibility:hidden;
+  pointer-events:none;
+}
+.departmentSwitcher.open{
+  transform:translateX(0);
+  visibility:visible;
+  pointer-events:auto;
+}
+.departmentSwitcher::after{display:none}
+.departmentNavHeading{
+  display:grid;
+  gap:2px;
+  margin:2px 5px 10px;
+  padding:0 4px 14px;
+  color:#fff;
+  border-bottom:1px solid rgba(255,255,255,.18);
+}
+.departmentNavHeading span{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.departmentNavHeading strong{font-size:18px;font-weight:750;letter-spacing:-.025em}
+.departmentSwitcher button,
+.departmentSwitcher button:hover,
+.departmentSwitcher button.active{
+  justify-content:flex-start;
+  flex-direction:row;
+  flex:none;
+  gap:11px;
+  min-height:58px;
+  padding:9px 11px;
+  text-align:left;
+  border-radius:17px;
+}
+.departmentSwitcher .departmentNavIcon{flex:none;width:36px;height:36px;border-radius:11px}
+.departmentSwitcher .departmentNavLabel{gap:2px}
+.departmentSwitcher .departmentNavLabel>span{font-size:9px}
+.departmentSwitcher .departmentNavLabel strong{font-size:12px}
+.departmentNavToggle{
+  position:fixed;
+  top:50%;
+  left:0;
+  z-index:62;
+  display:grid;
+  place-items:center;
+  align-items:center;
+  width:42px;
+  height:48px;
+  padding:0;
+  color:#fff;
+  background:linear-gradient(145deg,#238269,#12624e);
+  border:1px solid rgba(255,255,255,.28);
+  border-left:0;
+  border-radius:0 15px 15px 0;
+  box-shadow:0 11px 26px rgba(15,91,70,.25),inset 0 1px 0 rgba(255,255,255,.2);
+  cursor:pointer;
+  transform:translateY(-50%);
+  transition:left .3s cubic-bezier(.2,.75,.2,1),background .2s ease;
+}
+.departmentNavToggle .icon{transition:transform .25s ease}
+.departmentNavToggle.open{left:min(258px,82vw)}
+.departmentNavToggle.open .icon{transform:rotate(180deg)}
+.departmentNavToggle:focus-visible{outline:3px solid rgba(35,130,105,.3);outline-offset:3px}
+.departmentNavBackdrop{
+  position:fixed;
+  inset:0;
+  z-index:55;
+  padding:0;
+  background:rgba(24,28,47,.22);
+  border:0;
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  cursor:default;
+}
+@media(min-width:761px){
+  .departmentSwitcher{top:82px;bottom:24px;width:270px;padding:20px 16px}
+  .departmentNavToggle.open{left:270px}
+}
+@media(prefers-reduced-motion:reduce){
+  .departmentSwitcher,.departmentNavToggle,.departmentNavToggle .icon{transition:none}
+}
+
+/* Glass executive header and navigation */
+.reportTopbar{
+  background:linear-gradient(135deg,rgba(255,255,255,.68),rgba(236,248,244,.42));
+  border-bottom:1px solid rgba(255,255,255,.86);
+  box-shadow:0 12px 34px rgba(22,79,64,.1),inset 0 1px 0 rgba(255,255,255,.96);
+  backdrop-filter:blur(30px) saturate(155%);
+  -webkit-backdrop-filter:blur(30px) saturate(155%);
+}
+.reportBrand span{margin-top:3px;font-size:9px;letter-spacing:.16em}
+.reportBrand strong{
+  font-size:30px;
+  font-weight:750;
+  letter-spacing:-.045em;
+  line-height:1.05;
+}
+.departmentSwitcher{
+  background:linear-gradient(160deg,rgba(41,142,113,.78),rgba(17,100,78,.7) 52%,rgba(38,132,104,.75));
+  border:1px solid rgba(255,255,255,.28);
+  border-left:0;
+  box-shadow:18px 20px 48px rgba(12,77,60,.22),inset 0 1px 0 rgba(255,255,255,.3);
+  backdrop-filter:blur(28px) saturate(150%);
+  -webkit-backdrop-filter:blur(28px) saturate(150%);
+}
+.departmentSwitcher button:hover{background:rgba(255,255,255,.13)}
+.departmentSwitcher button.active{
+  background:linear-gradient(145deg,rgba(255,255,255,.94),rgba(232,247,241,.82));
+  border-color:rgba(255,255,255,.96);
+  box-shadow:0 10px 24px rgba(8,70,53,.2),inset 0 1px 0 #fff;
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.departmentNavToggle{
+  background:linear-gradient(145deg,rgba(38,137,108,.82),rgba(15,91,70,.78));
+  border-color:rgba(255,255,255,.36);
+  box-shadow:0 12px 28px rgba(15,91,70,.22),inset 0 1px 0 rgba(255,255,255,.32);
+  backdrop-filter:blur(20px) saturate(150%);
+  -webkit-backdrop-filter:blur(20px) saturate(150%);
+}
+@media(min-width:761px){
+  .reportBrand strong{font-size:36px}
+}
+
+/* Keep mobile metric values and labels on consistent baselines. */
+@media(max-width:660px){
+  .reportMetrics article,
+  .reportMetrics article:hover,
+  .reportMetrics.metrics-3 article{
+    display:grid;
+    grid-template-rows:auto 2.8em;
+    align-content:center;
+  }
+  .reportMetrics article>strong{
+    align-self:end;
+    line-height:1;
+  }
+  .reportMetrics article>span{
+    align-self:start;
+    min-height:2.8em;
+    margin-top:8px;
+    line-height:1.4;
+  }
+}
+
+/* User-controlled dashboard refresh. */
+.reportHeaderActions{display:flex;align-items:center;gap:10px;margin-left:auto}
+.reportHeaderActions .liveDataNotice{margin:0}
+.dashboardRefreshButton{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-height:40px;
+  padding:9px 12px;
+  color:#155f4b;
+  background:rgba(255,255,255,.58);
+  border:1px solid rgba(255,255,255,.9);
+  border-radius:12px;
+  box-shadow:0 9px 24px rgba(21,95,75,.1),inset 0 1px 0 rgba(255,255,255,.95);
+  font-size:10px;
+  font-weight:800;
+  cursor:pointer;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.dashboardRefreshButton:hover:not(:disabled){background:rgba(255,255,255,.82)}
+.dashboardRefreshButton:focus-visible{outline:3px solid rgba(35,130,105,.25);outline-offset:2px}
+.dashboardRefreshButton:disabled{cursor:wait;opacity:.72}
+.dashboardRefreshButton.refreshing .icon{animation:dashboardRefreshSpin .8s linear infinite}
+@keyframes dashboardRefreshSpin{to{transform:rotate(360deg)}}
+@media(max-width:520px){
+  .reportHeaderActions{gap:6px}
+  .reportHeaderActions .liveDataNotice{display:none}
+  .dashboardRefreshButton{width:40px;height:40px;padding:0;border-radius:12px}
+  .dashboardRefreshButton span{display:none}
+}
+@media(prefers-reduced-motion:reduce){.dashboardRefreshButton.refreshing .icon{animation:none}}

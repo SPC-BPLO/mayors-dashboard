@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
-import { getMayorDashboard } from "@/lib/dashboard-cache";
+import { getFreshMayorDashboard } from "@/lib/dashboard-cache";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const dashboard = await getMayorDashboard();
+    const dashboard = await getFreshMayorDashboard();
     const ageSeconds = Math.max(0, Math.floor((Date.now() - Date.parse(dashboard.updatedAt)) / 1000));
     return NextResponse.json(dashboard, {
       headers: {
-        "Cache-Control": "public, s-maxage=15, stale-while-revalidate=45",
+        "Cache-Control": "no-store, max-age=0",
         "X-Dashboard-Age-Seconds": String(ageSeconds),
         "X-Dashboard-Freshness": ageSeconds > 60 ? "stale" : "fresh",
         "X-Dashboard-Source": dashboard.source,

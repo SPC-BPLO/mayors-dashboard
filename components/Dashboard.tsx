@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Icon } from "@/components/Icon";
 import type { DepartmentDashboard, DepartmentId, MayorDashboardResponse } from "@/lib/dashboard-types";
 
 const monthLabels = ["—", "—", "—", "—", "—", "—"];
@@ -195,16 +196,28 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
   const [departments, setDepartments] = useState<DepartmentDashboard[]>(initialData?.departments ?? emptyDepartments);
   const [selectedDepartment, setSelectedDepartment] = useState<DepartmentId>("bplo");
   const [selectedMetric, setSelectedMetric] = useState<DepartmentDashboard["metrics"][number] | null>(null);
+  const [departmentNavOpen, setDepartmentNavOpen] = useState(false);
   const [collectionPeriod, setCollectionPeriod] = useState<"3m" | "6m" | "1y" | "lifetime">("3m");
+  const [refreshRequest, setRefreshRequest] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [dataState, setDataState] = useState<"loading" | "ready" | "delayed" | "error">(
     forceMaintenance ? "error" : initialData ? "ready" : "loading",
   );
-  const hasVerifiedData = useRef(Boolean(initialData));
   const metricDialogOpen = Boolean(selectedMetric?.details);
+
+  useEffect(() => {
+    if (!departmentNavOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setDepartmentNavOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [departmentNavOpen]);
 
   useEffect(() => {
     if (forceMaintenance) {
       setDataState("error");
+      setIsRefreshing(false);
       return;
     }
 
@@ -213,6 +226,7 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
     const load = async () => {
       if (requestInFlight) return;
       requestInFlight = true;
+      setIsRefreshing(true);
       const controller = new AbortController();
       let timeout = 0;
       try {
@@ -233,37 +247,29 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
         }
         if (active) {
           setDepartments(result.departments);
-          hasVerifiedData.current = true;
           const snapshotAge = Date.now() - Date.parse(result.updatedAt);
           setDataState(Number.isFinite(snapshotAge) && snapshotAge > 60_000 ? "delayed" : "ready");
         }
       } catch {
-        if (active) setDataState(hasVerifiedData.current ? "delayed" : "error");
+        // Keep the dashboard available when live data is temporarily unavailable.
+        // Maintenance mode is controlled explicitly by forceMaintenance only.
+        if (active) setDataState("delayed");
       } finally {
         window.clearTimeout(timeout);
         requestInFlight = false;
+        if (active) setIsRefreshing(false);
       }
     };
 
-    const refreshWhenVisible = () => {
-      if (document.visibilityState === "visible") void load();
-    };
-
     void load();
-    const refresh = window.setInterval(load, 15_000);
-    window.addEventListener("focus", refreshWhenVisible);
-    document.addEventListener("visibilitychange", refreshWhenVisible);
 
     return () => {
       active = false;
-      window.clearInterval(refresh);
-      window.removeEventListener("focus", refreshWhenVisible);
-      document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
-  }, [forceMaintenance, initialData]);
+  }, [forceMaintenance, initialData, refreshRequest]);
 
   useEffect(() => {
-    if (dataState !== "error") return;
+    if (!forceMaintenance) return;
 
     const scrollPosition = window.scrollY;
     const root = document.documentElement;
@@ -323,7 +329,7 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
       });
       window.scrollTo(0, scrollPosition);
     };
-  }, [dataState]);
+  }, [forceMaintenance]);
 
   useEffect(() => {
     if (!metricDialogOpen) return;
@@ -384,18 +390,30 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
   }, [collectionPeriod, department.trend]);
 
   return (
-    <div className={`reportDashboard${dataState === "error" ? " maintenanceMode" : ""}`}>
+    <div className={`reportDashboard${forceMaintenance ? " maintenanceMode" : ""}`}>
       <header className="reportTopbar">
         <div className="reportBrand">
+          <strong>Mabuhay, Mayora!</strong>
           <span>San Pablo City</span>
-          <strong>Mayor&apos;s Dashboard</strong>
         </div>
-        {dataState === "loading" && (
-          <div className="liveDataNotice loading" role="status">Loading live departmental data…</div>
-        )}
+        <div className="reportHeaderActions">
+          {dataState === "loading" && (
+            <div className="liveDataNotice loading" role="status">Loading live departmental data…</div>
+          )}
+          <button
+            aria-label={isRefreshing ? "Refreshing dashboard data" : "Refresh dashboard data"}
+            className={`dashboardRefreshButton${isRefreshing ? " refreshing" : ""}`}
+            disabled={isRefreshing}
+            onClick={() => setRefreshRequest((request) => request + 1)}
+            type="button"
+          >
+            <Icon name="refresh" size={17} />
+            <span>{isRefreshing ? "Refreshing" : "Refresh"}</span>
+          </button>
+        </div>
       </header>
 
-      {dataState === "error" && (
+      {forceMaintenance && (
         <div className="maintenanceOverlay" role="alertdialog" aria-live="assertive" aria-modal="true" aria-labelledby="maintenance-title">
           <section className="maintenanceNotice">
             <header className="maintenanceHeader">
@@ -429,7 +447,35 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
         </div>
       )}
 
-      <nav className="departmentSwitcher" aria-label="Department reports" role="tablist">
+      <button
+        aria-controls="department-navigation"
+        aria-expanded={departmentNavOpen}
+        aria-label={departmentNavOpen ? "Close department navigation" : "Open department navigation"}
+        className={`departmentNavToggle${departmentNavOpen ? " open" : ""}`}
+        onClick={() => setDepartmentNavOpen((open) => !open)}
+        type="button"
+      >
+        <Icon name="arrow" size={18} />
+      </button>
+
+      {departmentNavOpen && (
+        <button
+          aria-label="Close department navigation"
+          className="departmentNavBackdrop"
+          onClick={() => setDepartmentNavOpen(false)}
+          type="button"
+        />
+      )}
+
+      <nav
+        className={`departmentSwitcher${departmentNavOpen ? " open" : ""}`}
+        id="department-navigation"
+        aria-label="City services"
+        role="tablist"
+      >
+        <div className="departmentNavHeading">
+          <strong>City services</strong>
+        </div>
         {departments.map((item) => (
           <button
             aria-controls="department-report"
@@ -439,22 +485,24 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
             onClick={() => {
               setSelectedMetric(null);
               setSelectedDepartment(item.id);
+              setDepartmentNavOpen(false);
             }}
             role="tab"
             type="button"
           >
-            <span>{item.short}</span>
-            <strong>{item.name}</strong>
+            <span className="departmentNavIcon">
+              <img
+                alt=""
+                src={item.id === "bplo" ? "/bplo_seal.png" : item.id === "ctmo" ? "/ctmo_seal.png" : "/cto_seal.png"}
+              />
+            </span>
+            <span className="departmentNavLabel">
+              <span>{item.short}</span>
+              <strong>{item.name}</strong>
+            </span>
           </button>
         ))}
       </nav>
-
-      <div className="mayorGreetingBand" aria-label="Mabuhay Mayora">
-        <div className="mayorGreetingContent">
-          <span>Mabuhay</span>
-          <strong>Mayora</strong>
-        </div>
-      </div>
 
       <main className="departmentReport" id="department-report" key={department.id} role="tabpanel">
         <div className="reportHeading">

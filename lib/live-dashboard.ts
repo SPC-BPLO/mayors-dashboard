@@ -9,13 +9,19 @@ declare global {
 }
 
 function databaseUrl() {
-  return process.env.MAYOR_DATABASE_URL || process.env.USER_DATABASE_URL;
+  return process.env.MAYOR_DATABASE_URL
+    || process.env.DATABASE_URL
+    || process.env.USER_DATABASE_URL;
+}
+
+function databaseSslEnabled() {
+  return (process.env.MAYOR_DATABASE_SSL || process.env.DATABASE_SSL) !== "false";
 }
 
 function pool() {
   const connectionString = databaseUrl();
   if (!connectionString) {
-    throw new Error("MAYOR_DATABASE_URL is not configured");
+    throw new Error("No dashboard database URL is configured");
   }
 
   if (!globalThis.mayorDashboardPool) {
@@ -28,7 +34,7 @@ function pool() {
       statement_timeout: 20_000,
       keepAlive: true,
       allowExitOnIdle: true,
-      ssl: process.env.MAYOR_DATABASE_SSL === "false" ? undefined : { rejectUnauthorized: false },
+      ssl: databaseSslEnabled() ? { rejectUnauthorized: false } : undefined,
     });
   }
   return globalThis.mayorDashboardPool;

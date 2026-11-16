@@ -5,6 +5,5 @@ import { Dashboard } from "@/components/Dashboard";
 export const revalidate = 15;
 
 export default function Home() {
-  // Temporary production switch. Set to false when maintenance is complete.
-  return <Dashboard forceMaintenance />;
+  return <Dashboard />;
 }
