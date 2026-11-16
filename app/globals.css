@@ -1450,9 +1450,12 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
 .dashboardRefreshButton.refreshing .icon{animation:dashboardRefreshSpin .8s linear infinite}
 @keyframes dashboardRefreshSpin{to{transform:rotate(360deg)}}
 @media(max-width:520px){
-  .reportHeaderActions{gap:6px}
+  .reportTopbar{gap:8px;padding-right:12px;padding-left:12px}
+  .reportBrand{min-width:0}
+  .reportBrand strong{font-size:clamp(26px,8.3vw,30px);white-space:nowrap}
+  .reportHeaderActions{flex:none;gap:6px}
   .reportHeaderActions .liveDataNotice{display:none}
-  .dashboardRefreshButton{width:40px;height:40px;padding:0;border-radius:12px}
-  .dashboardRefreshButton span{display:none}
+  .dashboardRefreshButton{width:auto;height:40px;gap:5px;padding:0 9px;border-radius:12px;font-size:9px}
+  .dashboardRefreshButton span{display:inline}
 }
 @media(prefers-reduced-motion:reduce){.dashboardRefreshButton.refreshing .icon{animation:none}}

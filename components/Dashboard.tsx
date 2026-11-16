@@ -393,7 +393,7 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
     <div className={`reportDashboard${forceMaintenance ? " maintenanceMode" : ""}`}>
       <header className="reportTopbar">
         <div className="reportBrand">
-          <strong>Mabuhay, Mayora!</strong>
+          <strong>Mabuhay, Carmela!</strong>
           <span>San Pablo City</span>
         </div>
         <div className="reportHeaderActions">
