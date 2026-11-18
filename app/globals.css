@@ -1632,48 +1632,186 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .overviewChartCard .chartPointHalo,.overviewChartCard .chartSelectedCallout{animation:none}
 }
 
-/* Branded glass controls make the available interactions easier to notice. */
+/* Flat glassmorphism concept — local review. */
+.reportMetrics article,
+.reportMetrics article:hover,
+.overviewChartCard,
+.decisionSummaryCard{
+  background:rgba(249,253,251,.58);
+  border:1px solid rgba(255,255,255,.82);
+  box-shadow:none;
+  backdrop-filter:blur(18px) saturate(120%);
+  -webkit-backdrop-filter:blur(18px) saturate(120%);
+}
+.selectedMonthStat{
+  background:rgba(229,244,238,.58);
+  border-color:rgba(20,125,100,.16);
+  box-shadow:none;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
 .departmentSwitcher button:not(.active){
-  background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.05));
-  border-color:rgba(255,255,255,.15);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
-  backdrop-filter:blur(12px) saturate(125%);
-  -webkit-backdrop-filter:blur(12px) saturate(125%);
+  background:rgba(255,255,255,.09);
+  border-color:rgba(255,255,255,.18);
+  box-shadow:none;
+  backdrop-filter:blur(14px) saturate(115%);
+  -webkit-backdrop-filter:blur(14px) saturate(115%);
 }
 .departmentSwitcher button:not(.active):hover{
   color:#fff;
-  background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.09));
-  border-color:rgba(255,255,255,.3);
+  background:rgba(255,255,255,.17);
+  border-color:rgba(255,255,255,.28);
+}
+.departmentSwitcher button.active{
+  background:rgba(244,251,248,.9);
+  border-color:rgba(255,255,255,.78);
+  box-shadow:none;
 }
 .monthStatPicker button{
   position:relative;
   overflow:hidden;
   color:#375e52;
-  background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(222,242,235,.48));
-  border:1px solid rgba(255,255,255,.9);
-  box-shadow:0 8px 20px rgba(20,91,71,.11),inset 0 1px 0 rgba(255,255,255,.96);
-  backdrop-filter:blur(14px) saturate(135%);
-  -webkit-backdrop-filter:blur(14px) saturate(135%);
+  background:rgba(247,252,250,.62);
+  border:1px solid rgba(20,125,100,.17);
+  box-shadow:none;
+  backdrop-filter:blur(14px) saturate(115%);
+  -webkit-backdrop-filter:blur(14px) saturate(115%);
 }
-.monthStatPicker button::after{
-  position:absolute;
-  inset:1px 10% auto;
-  height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent);
-  content:"";
-  pointer-events:none;
-}
+.monthStatPicker button::after{display:none}
 .monthStatPicker button:hover{
   color:#0c6f56;
-  background:linear-gradient(145deg,rgba(255,255,255,.94),rgba(211,240,230,.68));
-  border-color:rgba(20,125,100,.24);
-  box-shadow:0 10px 24px rgba(20,91,71,.16),inset 0 1px 0 #fff;
-  transform:translateY(-1px);
+  background:rgba(231,246,240,.76);
+  border-color:rgba(20,125,100,.3);
+  box-shadow:none;
+  transform:none;
 }
 .monthStatPicker button.active{
   color:#fff;
-  background:linear-gradient(145deg,rgba(31,146,113,.92),rgba(8,100,76,.9));
-  border-color:rgba(255,255,255,.48);
-  box-shadow:0 10px 24px rgba(8,91,67,.25),inset 0 1px 0 rgba(255,255,255,.42);
+  background:rgba(16,118,89,.88);
+  border-color:rgba(255,255,255,.58);
+  box-shadow:none;
 }
 .monthStatPicker button:focus-visible{outline:3px solid rgba(20,125,100,.3);outline-offset:3px}
+
+/* Three-reference global branding concept — local review. */
+.reportDashboard{
+  --brand-forest:#0d4f3d;
+  --brand-forest-deep:#092f27;
+  --brand-lime:#b9ef72;
+  --brand-mist:#e9f1ed;
+  --brand-ink:#17261f;
+  color:var(--brand-ink);
+  background:
+    radial-gradient(circle at 88% 8%,rgba(185,239,114,.2),transparent 28%),
+    linear-gradient(135deg,#dce5e1 0%,#edf2ef 48%,#e7ece8 100%);
+}
+.reportTopbar{
+  margin:12px 14px 0;
+  background:rgba(250,253,251,.78);
+  border:1px solid rgba(255,255,255,.9);
+  border-radius:22px;
+  box-shadow:none;
+  backdrop-filter:blur(20px) saturate(120%);
+  -webkit-backdrop-filter:blur(20px) saturate(120%);
+}
+.reportBrand span{color:#477064}
+.reportBrand small{color:#6e827b}
+.dashboardRefreshButton{
+  color:var(--brand-forest);
+  background:rgba(255,255,255,.58);
+  border-color:rgba(13,79,61,.14);
+  box-shadow:none;
+}
+.reportHeading{
+  position:relative;
+  align-items:center;
+  min-height:96px;
+  margin-bottom:14px;
+  padding:17px 22px;
+  overflow:hidden;
+  color:#fff;
+  background:
+    linear-gradient(115deg,rgba(9,47,39,.97),rgba(13,79,61,.92) 62%,rgba(34,118,91,.86));
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:22px;
+  box-shadow:none;
+}
+.reportHeading::before{
+  position:absolute;
+  top:-54px;
+  right:-24px;
+  width:180px;
+  height:180px;
+  background:var(--brand-lime);
+  border-radius:42% 58% 65% 35%;
+  opacity:.16;
+  content:"";
+  transform:rotate(24deg);
+}
+.reportHeading::after{
+  position:absolute;
+  right:38px;
+  bottom:18px;
+  width:64px;
+  height:4px;
+  background:var(--brand-lime);
+  border-radius:99px;
+  content:"";
+}
+.reportHeading>div{position:relative;z-index:1}
+.reportHeading span{color:var(--brand-lime)}
+.reportHeading h1{color:#fff;font-size:clamp(25px,2.4vw,36px)}
+.reportHeading p{max-width:48ch;color:rgba(255,255,255,.68)}
+.reportMetrics article,
+.reportMetrics article:hover,
+.overviewChartCard,
+.decisionSummaryCard{
+  background:rgba(252,254,253,.7);
+  border-color:rgba(255,255,255,.88);
+  border-radius:18px;
+  box-shadow:none;
+}
+.reportMetrics article:first-child,
+.reportMetrics article:first-child:hover{
+  background:rgba(210,244,167,.72);
+  border-color:rgba(185,239,114,.7);
+}
+.reportMetrics article:first-child>span{color:#315f4c}
+.overviewChartCard{background:rgba(250,253,251,.74)}
+.decisionSummaryCard{
+  background:linear-gradient(145deg,rgba(206,242,164,.72),rgba(232,248,211,.62));
+  border-color:rgba(185,239,114,.72);
+}
+.decisionSummaryHeading{border-bottom-color:rgba(13,79,61,.14)}
+.decisionSummaryHeading>span,.prioritySummary>span{color:var(--brand-forest)}
+.departmentSwitcher{
+  background:linear-gradient(165deg,rgba(9,47,39,.96),rgba(13,79,61,.92));
+  border-color:rgba(255,255,255,.15);
+  box-shadow:none;
+}
+.departmentNavToggle{
+  background:rgba(9,47,39,.94);
+  border-color:rgba(255,255,255,.2);
+  box-shadow:none;
+}
+.departmentSwitcher button.active{
+  color:var(--brand-forest-deep);
+  background:rgba(185,239,114,.92);
+  border-color:rgba(216,251,174,.92);
+}
+.departmentSwitcher button.active .departmentNavIcon{
+  color:var(--brand-forest);
+  background:rgba(255,255,255,.48);
+  border-color:rgba(255,255,255,.58);
+}
+.monthStatPicker button.active{
+  color:var(--brand-forest-deep);
+  background:rgba(185,239,114,.9);
+  border-color:rgba(13,79,61,.16);
+}
+@media(max-width:660px){
+  .reportTopbar{margin:8px 8px 0;border-radius:18px}
+  .reportHeading{min-height:104px;padding:17px 18px;border-radius:18px}
+  .reportHeading::after{right:24px;bottom:14px;width:44px}
+  .reportHeading h1{max-width:82%;font-size:25px}
+}

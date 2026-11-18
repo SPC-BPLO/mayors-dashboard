@@ -502,7 +502,7 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
           <div>
             <span>City Government of San Pablo</span>
             <strong>Mabuhay, Carmela!</strong>
-            <small>Mayor&apos;s Dashboard</small>
+            <small>Executive Overview</small>
           </div>
         </div>
         <div className="reportHeaderActions">
@@ -618,7 +618,6 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
           <div>
             <span>{department.short}</span>
             <h1>{department.reportTitle}</h1>
-            <p>Essential information for today&apos;s executive review.</p>
           </div>
         </div>
 
