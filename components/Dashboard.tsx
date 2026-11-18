@@ -63,6 +63,19 @@ function formatFullMonthName(label: string) {
   return fullMonthNames[label.trim().toLowerCase().replace(".", "")] ?? label;
 }
 
+function createSmoothPath(points: Array<{ x: number; y: number }>) {
+  if (points.length === 0) return "";
+  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+
+  return points.slice(1).reduce((path, point, index) => {
+    const previous = points[index];
+    const distance = point.x - previous.x;
+    const controlOneX = previous.x + distance * 0.42;
+    const controlTwoX = point.x - distance * 0.42;
+    return `${path} C ${controlOneX} ${previous.y}, ${controlTwoX} ${point.y}, ${point.x} ${point.y}`;
+  }, `M ${points[0].x} ${points[0].y}`);
+}
+
 function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
   const [selectedPoint, setSelectedPoint] = useState(Math.max(trend.values.length - 1, 0));
@@ -73,8 +86,9 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
   const top = 28;
   const bottom = 50;
   const minimum = 0;
-  const maximum = Math.max(...trend.values);
-  const range = Math.max(maximum - minimum, 1);
+  const dataMaximum = Math.max(...trend.values);
+  const maximum = Math.max(dataMaximum, 1);
+  const range = maximum - minimum;
   const isCurrency = trend.valueSuffix === "K";
   const yAxisTitle = isCurrency
     ? "Amount (₱K)"
@@ -88,8 +102,11 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
     const y = top + ((maximum - value) / range) * (height - top - bottom);
     return { x, y, value };
   });
-  const polyline = points.map(({ x, y }) => `${x},${y}`).join(" ");
-  const area = `${left},${height - bottom} ${polyline} ${width - right},${height - bottom}`;
+  const linePath = createSmoothPath(points);
+  const chartBase = height - bottom;
+  const areaPath = points.length > 0
+    ? `${linePath} L ${points[points.length - 1].x} ${chartBase} L ${points[0].x} ${chartBase} Z`
+    : "";
   const activePoint = points[selectedPoint] ?? points[points.length - 1];
 
   useEffect(() => {
@@ -106,6 +123,16 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
         </div>
       )}
       <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${trend.title} chart`}>
+        <defs>
+          <linearGradient id="mayor-chart-area" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#16876a" stopOpacity="0.28" />
+            <stop offset="72%" stopColor="#57b495" stopOpacity="0.09" />
+            <stop offset="100%" stopColor="#57b495" stopOpacity="0" />
+          </linearGradient>
+          <filter id="mayor-chart-shadow" x="-20%" y="-30%" width="140%" height="170%">
+            <feDropShadow dx="0" dy="5" stdDeviation="5" floodColor="#0d6f58" floodOpacity="0.18" />
+          </filter>
+        </defs>
         {[0, 1, 2, 3].map((line) => {
           const y = top + (line * (height - top - bottom)) / 3;
           const value = maximum - (line * range) / 3;
@@ -131,8 +158,17 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
           {yAxisTitle}
         </text>
         <text x={(left + width - right) / 2} y={height - 2} textAnchor="middle" className="chartAxisTitle">{xAxisTitle}</text>
-        <polygon points={area} className="chartArea" />
-        <polyline points={polyline} className="chartLine" />
+        {activePoint && (
+          <line
+            x1={activePoint.x}
+            x2={activePoint.x}
+            y1={top}
+            y2={chartBase}
+            className="chartSelectionGuide"
+          />
+        )}
+        <path d={areaPath} className="chartArea" />
+        <path d={linePath} className="chartLine" filter="url(#mayor-chart-shadow)" />
         {points.map(({ x, y, value }, index) => {
           const showAxisLabel = trend.labels.length <= 7 || index === trend.labels.length - 1 || index % Math.ceil(trend.labels.length / 6) === 0;
           const tooltipX = Math.min(Math.max(x, 74), width - 74);

@@ -1561,3 +1561,52 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .skeletonLine::after,.skeletonCard::after,.skeletonOverview::after,.skeletonChart::after{animation:none}
   .monthStatPicker button{transition:none}
 }
+
+/* Refined executive trend chart — local review. */
+.overviewChartCard .trendChart{padding:4px 4px 0}
+.overviewChartCard .trendChart svg{
+  overflow:visible;
+  border-radius:16px;
+  background:linear-gradient(180deg,rgba(246,252,249,.72),rgba(255,255,255,.2));
+}
+.overviewChartCard .chartArea{fill:url(#mayor-chart-area)}
+.overviewChartCard .chartLine{
+  fill:none;
+  stroke:#11765d;
+  stroke-width:5;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.overviewChartCard .chartGridline{
+  stroke:rgba(66,111,97,.14);
+  stroke-dasharray:3 8;
+}
+.overviewChartCard .chartAxisLine{stroke:rgba(66,111,97,.2)}
+.overviewChartCard .chartAxisTitle{fill:#6f7f79;font-size:9px;font-weight:700;letter-spacing:.02em}
+.overviewChartCard .chartAxisValue{fill:#7a8a84;font-size:9px;font-weight:650}
+.overviewChartCard .chartSelectionGuide{
+  stroke:rgba(20,125,100,.26);
+  stroke-width:1.5;
+  stroke-dasharray:4 6;
+}
+.overviewChartCard .chartPoint{
+  fill:#f8fffc;
+  stroke:#147d64;
+  transition:r .18s ease,fill .18s ease,stroke-width .18s ease;
+}
+.overviewChartCard .chartPoint.selected{fill:#147d64;stroke:#fff;stroke-width:4}
+.overviewChartCard .chartPointHalo{fill:rgba(20,125,100,.11);stroke:rgba(20,125,100,.18);stroke-width:1.5}
+.overviewChartCard .chartValue{fill:#263d35;font-weight:800;paint-order:stroke;stroke:rgba(255,255,255,.9);stroke-width:4px;stroke-linejoin:round}
+.overviewChartCard .chartLabel{fill:#60736c}
+.overviewChartCard .chartTooltip rect{fill:rgba(17,52,43,.94);stroke:rgba(255,255,255,.9);stroke-width:1}
+
+@media(max-width:639px){
+  .overviewChartCard .trendChart{margin-right:-5px;margin-left:-5px;padding:2px 0 0}
+  .overviewChartCard .trendChart svg{height:270px;border-radius:14px}
+  .overviewChartCard .chartLine{stroke-width:6}
+  .overviewChartCard .chartAxisTitle{display:none}
+  .overviewChartCard .chartAxisValue{font-size:11px}
+  .overviewChartCard .chartLabel{font-size:15px}
+  .overviewChartCard .chartValue{font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){.overviewChartCard .chartPoint{transition:none}}
