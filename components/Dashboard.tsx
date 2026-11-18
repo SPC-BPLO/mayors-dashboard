@@ -77,8 +77,7 @@ function createSmoothPath(points: Array<{ x: number; y: number }>) {
 }
 
 function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
-  const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
-  const [selectedPoint, setSelectedPoint] = useState(Math.max(trend.values.length - 1, 0));
+  const [selectedPoint, setSelectedPoint] = useState<number | null>(null);
   const [compactChart, setCompactChart] = useState(false);
   const width = compactChart ? 420 : 640;
   const height = compactChart ? 260 : 230;
@@ -108,10 +107,13 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
   const areaPath = points.length > 0
     ? `${linePath} L ${points[points.length - 1].x} ${chartBase} L ${points[0].x} ${chartBase} Z`
     : "";
-  const activePoint = points[selectedPoint] ?? points[points.length - 1];
-  const previousPoint = selectedPoint > 0 ? points[selectedPoint - 1] : null;
+  const activePoint = selectedPoint === null ? null : points[selectedPoint] ?? null;
+  const selectedLabel = selectedPoint === null ? null : trend.labels[selectedPoint] ?? null;
+  const previousPoint = selectedPoint !== null && selectedPoint > 0 ? points[selectedPoint - 1] : null;
   const selectedDifference = previousPoint && activePoint ? activePoint.value - previousPoint.value : null;
-  const selectedComparison = selectedDifference === null
+  const selectedComparison = selectedPoint === null
+    ? ""
+    : selectedDifference === null
     ? "Starting month in this view"
     : selectedDifference === 0
       ? `No change from ${formatFullMonthName(trend.labels[selectedPoint - 1])}`
@@ -120,13 +122,11 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
   const selectedCalloutY = activePoint ? Math.max(activePoint.y - 62, 5) : 5;
 
   const selectPoint = (index: number) => {
-    if (index === selectedPoint) return;
-    setSelectedPoint(index);
+    setSelectedPoint((currentPoint) => currentPoint === index ? null : index);
   };
 
   useEffect(() => {
-    const lastPoint = Math.max(trend.values.length - 1, 0);
-    setSelectedPoint(lastPoint);
+    setSelectedPoint(null);
   }, [trend.labels, trend.values.length]);
 
   useEffect(() => {
@@ -140,14 +140,20 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
 
   return (
     <div className="trendChart" aria-label={`${trend.title}: ${trend.values.join(", ")}`}>
-      {trend.labels.length <= 8 && activePoint && (
-        <div className="selectedMonthStat" aria-live="polite">
-          <span>Selected month</span>
-          <strong>{formatFullMonthName(trend.labels[selectedPoint])}</strong>
-          <b>{formatTrendValue(activePoint.value, trend.valueSuffix)}</b>
-          <small className={selectedDifference === null || selectedDifference === 0 ? "steady" : selectedDifference > 0 ? "up" : "down"}>
-            {selectedComparison}
-          </small>
+      {trend.labels.length <= 8 && (
+        <div className="selectedMonthStatSlot" aria-live="polite">
+          {activePoint && selectedLabel ? (
+            <div className="selectedMonthStat">
+              <span>Selected month</span>
+              <strong>{formatFullMonthName(selectedLabel)}</strong>
+              <b>{formatTrendValue(activePoint.value, trend.valueSuffix)}</b>
+              <small className={selectedDifference === null || selectedDifference === 0 ? "steady" : selectedDifference > 0 ? "up" : "down"}>
+                {selectedComparison}
+              </small>
+            </div>
+          ) : (
+            <div className="selectedMonthPrompt">Select a month to view its result</div>
+          )}
         </div>
       )}
       <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${trend.title} chart`}>
@@ -187,35 +193,21 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
         </text>
         <text x={(left + width - right) / 2} y={height - 2} textAnchor="middle" className="chartAxisTitle">{xAxisTitle}</text>
         {activePoint && (
-          <>
-            <rect
-              x={activePoint.x - 28}
-              y={top}
-              width="56"
-              height={chartBase - top}
-              rx="18"
-              className="chartSelectionBand"
-            />
-            <line
-              x1={activePoint.x}
-              x2={activePoint.x}
-              y1={top}
-              y2={chartBase}
-              className="chartSelectionGuide"
-            />
-          </>
+          <line
+            x1={activePoint.x}
+            x2={activePoint.x}
+            y1={top}
+            y2={chartBase}
+            className="chartSelectionGuide"
+          />
         )}
         <path d={areaPath} className="chartArea" />
         <path d={linePath} className="chartLine" filter="url(#mayor-chart-shadow)" />
         {points.map(({ x, y, value }, index) => {
           const showAxisLabel = trend.labels.length <= 7 || index === trend.labels.length - 1 || index % Math.ceil(trend.labels.length / 6) === 0;
-          const tooltipX = Math.min(Math.max(x, 74), width - 74);
-          const tooltipY = Math.max(y - 56, 4);
           return (
           <g
             key={`${trend.labels[index]}-${value}-${index}`}
-            onBlur={() => setHoveredPoint(null)}
-            onFocus={() => setHoveredPoint(index)}
             onClick={() => selectPoint(index)}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
@@ -223,8 +215,6 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
                 selectPoint(index);
               }
             }}
-            onMouseEnter={() => setHoveredPoint(index)}
-            onMouseLeave={() => setHoveredPoint(null)}
             role="button"
             tabIndex={0}
             aria-label={`View ${formatFullMonthName(trend.labels[index])}: ${formatTrendValue(value, trend.valueSuffix)}`}
@@ -239,20 +229,13 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
               </text>
             )}
             {showAxisLabel && <text x={x} y={height - 14} textAnchor="middle" className="chartLabel">{trend.labels[index]}</text>}
-            {hoveredPoint === index && hoveredPoint !== selectedPoint && (
-              <g className="chartTooltip" pointerEvents="none">
-                <rect x={tooltipX - 65} y={tooltipY} width="130" height="42" rx="9" />
-                <text x={tooltipX} y={tooltipY + 15} textAnchor="middle" className="chartTooltipDate">{trend.labels[index]}</text>
-                <text x={tooltipX} y={tooltipY + 32} textAnchor="middle" className="chartTooltipValue">{formatTrendValue(value, trend.valueSuffix)}</text>
-              </g>
-            )}
           </g>
         )})}
-        {activePoint && (
+        {activePoint && selectedLabel && (
           <g key={`selected-callout-${selectedPoint}`} className="chartSelectedCallout" pointerEvents="none">
             <rect x={selectedCalloutX - 70} y={selectedCalloutY} width="140" height="46" rx="11" />
             <text x={selectedCalloutX} y={selectedCalloutY + 17} textAnchor="middle" className="chartSelectedMonth">
-              {formatFullMonthName(trend.labels[selectedPoint])}
+              {formatFullMonthName(selectedLabel)}
             </text>
             <text x={selectedCalloutX} y={selectedCalloutY + 35} textAnchor="middle" className="chartSelectedValue">
               {formatTrendValue(activePoint.value, trend.valueSuffix)}
