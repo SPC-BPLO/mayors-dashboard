@@ -1622,3 +1622,12 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .overviewChartCard .chartValue{font-size:16px}
 }
 @media(prefers-reduced-motion:reduce){.overviewChartCard .chartPoint{transition:none}}
+
+/* Quiet selection feedback suited to the executive view. */
+.overviewChartCard .chartPointHalo{transform-box:fill-box;transform-origin:center;animation:selectedPointFocus .26s ease-out both}
+.overviewChartCard .chartSelectedCallout{animation:selectedCalloutEnter .24s ease-out both}
+@keyframes selectedPointFocus{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
+@keyframes selectedCalloutEnter{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){
+  .overviewChartCard .chartPointHalo,.overviewChartCard .chartSelectedCallout{animation:none}
+}

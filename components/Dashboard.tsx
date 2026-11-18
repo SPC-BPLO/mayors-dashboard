@@ -118,8 +118,14 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
   const selectedCalloutX = activePoint ? Math.min(Math.max(activePoint.x, 82), width - 82) : 82;
   const selectedCalloutY = activePoint ? Math.max(activePoint.y - 62, 5) : 5;
 
+  const selectPoint = (index: number) => {
+    if (index === selectedPoint) return;
+    setSelectedPoint(index);
+  };
+
   useEffect(() => {
-    setSelectedPoint(Math.max(trend.values.length - 1, 0));
+    const lastPoint = Math.max(trend.values.length - 1, 0);
+    setSelectedPoint(lastPoint);
   }, [trend.labels, trend.values.length]);
 
   return (
@@ -200,11 +206,11 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
             key={`${trend.labels[index]}-${value}-${index}`}
             onBlur={() => setHoveredPoint(null)}
             onFocus={() => setHoveredPoint(index)}
-            onClick={() => setSelectedPoint(index)}
+            onClick={() => selectPoint(index)}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
-                setSelectedPoint(index);
+                selectPoint(index);
               }
             }}
             onMouseEnter={() => setHoveredPoint(index)}
@@ -214,7 +220,7 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
             aria-label={`View ${formatFullMonthName(trend.labels[index])}: ${formatTrendValue(value, trend.valueSuffix)}`}
           >
             <title>{`${trend.labels[index]}: ${formatTrendValue(value, trend.valueSuffix)}`}</title>
-            {selectedPoint === index && <circle cx={x} cy={y} r="15" className="chartPointHalo" />}
+            {selectedPoint === index && <circle key={`halo-${selectedPoint}`} cx={x} cy={y} r="15" className="chartPointHalo" />}
             <circle cx={x} cy={y} r="5" className={`chartPoint${selectedPoint === index ? " selected" : ""}`} />
             <circle cx={x} cy={y} r="14" className="chartHitArea" />
             {!trend.periodTotals && (
@@ -233,7 +239,7 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
           </g>
         )})}
         {activePoint && (
-          <g className="chartSelectedCallout" pointerEvents="none">
+          <g key={`selected-callout-${selectedPoint}`} className="chartSelectedCallout" pointerEvents="none">
             <rect x={selectedCalloutX - 70} y={selectedCalloutY} width="140" height="46" rx="11" />
             <text x={selectedCalloutX} y={selectedCalloutY + 17} textAnchor="middle" className="chartSelectedMonth">
               {formatFullMonthName(trend.labels[selectedPoint])}
@@ -252,7 +258,7 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
               aria-label={`View ${formatFullMonthName(label)}: ${formatTrendValue(trend.values[index], trend.valueSuffix)}`}
               className={selectedPoint === index ? "active" : ""}
               key={`${label}-${index}`}
-              onClick={() => setSelectedPoint(index)}
+              onClick={() => selectPoint(index)}
               type="button"
             >
               {label}
