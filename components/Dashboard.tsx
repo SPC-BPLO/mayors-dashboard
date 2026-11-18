@@ -79,12 +79,13 @@ function createSmoothPath(points: Array<{ x: number; y: number }>) {
 function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
   const [selectedPoint, setSelectedPoint] = useState(Math.max(trend.values.length - 1, 0));
-  const width = 640;
-  const height = 230;
-  const left = 66;
-  const right = 18;
-  const top = 28;
-  const bottom = 50;
+  const [compactChart, setCompactChart] = useState(false);
+  const width = compactChart ? 420 : 640;
+  const height = compactChart ? 260 : 230;
+  const left = compactChart ? 50 : 66;
+  const right = compactChart ? 12 : 18;
+  const top = compactChart ? 34 : 28;
+  const bottom = compactChart ? 48 : 50;
   const minimum = 0;
   const dataMaximum = Math.max(...trend.values);
   const maximum = Math.max(dataMaximum, 1);
@@ -127,6 +128,15 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
     const lastPoint = Math.max(trend.values.length - 1, 0);
     setSelectedPoint(lastPoint);
   }, [trend.labels, trend.values.length]);
+
+  useEffect(() => {
+    const mobileViewport = window.matchMedia("(max-width: 639px)");
+    const updateChartSize = () => setCompactChart(mobileViewport.matches);
+
+    updateChartSize();
+    mobileViewport.addEventListener("change", updateChartSize);
+    return () => mobileViewport.removeEventListener("change", updateChartSize);
+  }, []);
 
   return (
     <div className="trendChart" aria-label={`${trend.title}: ${trend.values.join(", ")}`}>

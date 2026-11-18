@@ -1614,7 +1614,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
 
 @media(max-width:639px){
   .overviewChartCard .trendChart{margin-right:-5px;margin-left:-5px;padding:2px 0 0}
-  .overviewChartCard .trendChart svg{height:270px;border-radius:14px}
+  .overviewChartCard .trendChart svg{height:auto;aspect-ratio:420/260;border-radius:14px}
   .overviewChartCard .chartLine{stroke-width:6}
   .overviewChartCard .chartAxisTitle{display:none}
   .overviewChartCard .chartAxisValue{font-size:11px}
