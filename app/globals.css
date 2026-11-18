@@ -1511,6 +1511,9 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
 .selectedMonthStat span{grid-column:1/-1;color:#147d64;font-size:8px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
 .selectedMonthStat strong{font-size:17px}
 .selectedMonthStat b{color:#0d6f58;font-size:21px}
+.selectedMonthStat small{grid-column:1/-1;margin-top:4px;color:#687a74;font-size:10px;font-weight:700}
+.selectedMonthStat small.up{color:#0d765b}
+.selectedMonthStat small.down{color:#9a6619}
 .monthStatPicker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:10px}
 .monthStatPicker button{min-width:0;min-height:42px;padding:8px 10px;color:#61716c;background:rgba(255,255,255,.5);border:1px solid rgba(72,105,96,.13);border-radius:999px;font:800 10px Arial,Helvetica,sans-serif;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:background .18s ease,border-color .18s ease,color .18s ease,transform .18s ease}
 .monthStatPicker button.active{color:#fff;background:linear-gradient(135deg,#147d64,#0b6d56);border-color:transparent;box-shadow:0 7px 16px rgba(20,125,100,.2)}
@@ -1589,6 +1592,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   stroke-width:1.5;
   stroke-dasharray:4 6;
 }
+.overviewChartCard .chartSelectionBand{fill:rgba(20,125,100,.045)}
 .overviewChartCard .chartPoint{
   fill:#f8fffc;
   stroke:#147d64;
@@ -1599,6 +1603,14 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
 .overviewChartCard .chartValue{fill:#263d35;font-weight:800;paint-order:stroke;stroke:rgba(255,255,255,.9);stroke-width:4px;stroke-linejoin:round}
 .overviewChartCard .chartLabel{fill:#60736c}
 .overviewChartCard .chartTooltip rect{fill:rgba(17,52,43,.94);stroke:rgba(255,255,255,.9);stroke-width:1}
+.overviewChartCard .chartSelectedCallout rect{
+  fill:rgba(17,52,43,.95);
+  stroke:rgba(255,255,255,.92);
+  stroke-width:1;
+  filter:drop-shadow(0 8px 12px rgba(13,70,56,.22));
+}
+.overviewChartCard .chartSelectedMonth{fill:#b9d8ce;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.overviewChartCard .chartSelectedValue{fill:#fff;font-size:14px;font-weight:800}
 
 @media(max-width:639px){
   .overviewChartCard .trendChart{margin-right:-5px;margin-left:-5px;padding:2px 0 0}
