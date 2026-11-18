@@ -5,13 +5,26 @@ import { Icon } from "@/components/Icon";
 import type { DepartmentDashboard, DepartmentId, MayorDashboardResponse } from "@/lib/dashboard-types";
 
 const monthLabels = ["—", "—", "—", "—", "—", "—"];
+const fullMonthNames: Record<string, string> = {
+  jan: "January",
+  feb: "February",
+  mar: "March",
+  apr: "April",
+  may: "May",
+  jun: "June",
+  jul: "July",
+  aug: "August",
+  sep: "September",
+  oct: "October",
+  nov: "November",
+  dec: "December",
+};
 const emptyDepartments: DepartmentDashboard[] = [
   { id: "bplo", short: "BPLO", name: "Franchise", reportTitle: "Franchise records", metrics: ["Active franchises", "Expiring in 30 days", "MTOPs due for revocation", "MTOP slots available"].map((label) => ({ label, value: "—" })), trend: { title: "Active franchise trend", labels: monthLabels, values: [0, 0, 0, 0, 0, 0] }, distribution: { title: "Franchise status", centerValue: "—", centerLabel: "records", items: [] }, ranking: { title: "Key franchise records", items: [] } },
   { id: "ctmo", short: "CTMO", name: "Traffic Violations", reportTitle: "Traffic violation records", metrics: ["Violations recorded", "Tickets settled", "Repeat offenders"].map((label) => ({ label, value: "—" })), trend: { title: "Monthly violation trend", labels: monthLabels, values: [0, 0, 0, 0, 0, 0] }, distribution: { title: "Ticket resolution", centerValue: "—", centerLabel: "tickets", items: [] }, ranking: { title: "Most recorded violations", items: [] } },
   { id: "cto", short: "CTO", name: "Finance–Cashier", reportTitle: "Finance and collections", metrics: ["Violation collection today", "Tickets settled today", "Franchise collections", "Franchise transactions"].map((label) => ({ label, value: "—" })), trend: { title: "Violation-fee collections", labels: monthLabels, values: [0, 0, 0, 0, 0, 0], valueSuffix: "K" }, distribution: { title: "Average daily ticket activity", centerValue: "—", centerLabel: "tickets/day", items: [] }, ranking: { title: "Average daily collections by category", items: [] } },
 ];
 
-const chartColors = ["#147d64", "#ef6b3a", "#f2a7b8", "#9dcfb9", "#dfe9e3"];
 const maintenanceResumeAt = new Date("2026-11-16T17:00:00+08:00");
 
 // Flip to true once we're confident service will be back by then.
@@ -46,8 +59,13 @@ function formatTrendValue(value: number, suffix?: string) {
   return `${value.toLocaleString()}${suffix ?? ""}`;
 }
 
+function formatFullMonthName(label: string) {
+  return fullMonthNames[label.trim().toLowerCase().replace(".", "")] ?? label;
+}
+
 function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
+  const [selectedPoint, setSelectedPoint] = useState(Math.max(trend.values.length - 1, 0));
   const width = 640;
   const height = 230;
   const left = 66;
@@ -72,10 +90,22 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
   });
   const polyline = points.map(({ x, y }) => `${x},${y}`).join(" ");
   const area = `${left},${height - bottom} ${polyline} ${width - right},${height - bottom}`;
+  const activePoint = points[selectedPoint] ?? points[points.length - 1];
+
+  useEffect(() => {
+    setSelectedPoint(Math.max(trend.values.length - 1, 0));
+  }, [trend.labels, trend.values.length]);
 
   return (
-    <div className="trendChart" role="img" aria-label={`${trend.title}: ${trend.values.join(", ")}`}>
-      <svg viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
+    <div className="trendChart" aria-label={`${trend.title}: ${trend.values.join(", ")}`}>
+      {trend.labels.length <= 8 && activePoint && (
+        <div className="selectedMonthStat" aria-live="polite">
+          <span>Selected month</span>
+          <strong>{formatFullMonthName(trend.labels[selectedPoint])}</strong>
+          <b>{formatTrendValue(activePoint.value, trend.valueSuffix)}</b>
+        </div>
+      )}
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${trend.title} chart`}>
         {[0, 1, 2, 3].map((line) => {
           const y = top + (line * (height - top - bottom)) / 3;
           const value = maximum - (line * range) / 3;
@@ -112,12 +142,21 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
             key={`${trend.labels[index]}-${value}-${index}`}
             onBlur={() => setHoveredPoint(null)}
             onFocus={() => setHoveredPoint(index)}
+            onClick={() => setSelectedPoint(index)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                setSelectedPoint(index);
+              }
+            }}
             onMouseEnter={() => setHoveredPoint(index)}
             onMouseLeave={() => setHoveredPoint(null)}
-            tabIndex={trend.periodTotals ? 0 : undefined}
+            role="button"
+            tabIndex={0}
           >
             <title>{`${trend.labels[index]}: ${formatTrendValue(value, trend.valueSuffix)}`}</title>
-            <circle cx={x} cy={y} r="5" className="chartPoint" />
+            {selectedPoint === index && <circle cx={x} cy={y} r="15" className="chartPointHalo" />}
+            <circle cx={x} cy={y} r="5" className={`chartPoint${selectedPoint === index ? " selected" : ""}`} />
             <circle cx={x} cy={y} r="14" className="chartHitArea" />
             {!trend.periodTotals && (
               <text x={x} y={Math.max(y - 12, 13)} textAnchor="middle" className="chartValue">
@@ -135,60 +174,39 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
           </g>
         )})}
       </svg>
+      {trend.labels.length <= 8 && (
+        <div className="monthStatPicker" aria-label="Choose a month">
+          {trend.labels.map((label, index) => (
+            <button
+              aria-pressed={selectedPoint === index}
+              className={selectedPoint === index ? "active" : ""}
+              key={`${label}-${index}`}
+              onClick={() => setSelectedPoint(index)}
+              type="button"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-function DistributionChart({ distribution }: { distribution: DepartmentDashboard["distribution"] }) {
-  const total = distribution.items.reduce((sum, item) => sum + item.value, 0);
-  let cursor = 0;
-  const stops = distribution.items.map((item, index) => {
-    const start = cursor;
-    cursor += total > 0 ? (item.value / total) * 100 : 0;
-    return `${chartColors[index]} ${start}% ${cursor}%`;
-  });
-
+function DashboardSkeleton() {
   return (
-    <div className="distributionLayout">
-      <div className="donutChart">
-        <span
-          aria-hidden="true"
-          className="donutChartRing"
-          style={{ background: stops.length && total > 0 ? `conic-gradient(${stops.join(", ")})` : "rgba(20,125,100,.12)" }}
-        />
-        <div>
-          <strong>{distribution.centerValue}</strong>
-          <span>{distribution.centerLabel}</span>
-        </div>
+    <main className="dashboardSkeleton" aria-busy="true" aria-label="Loading dashboard">
+      <div className="skeletonLine skeletonEyebrow" />
+      <div className="skeletonLine skeletonTitle" />
+      <div className="skeletonMetrics">
+        {[0, 1, 2, 3].map((item) => <div className="skeletonCard" key={item} />)}
       </div>
-      <div className="distributionLegend">
-        {distribution.items.map((item, index) => (
-          <div key={item.label}>
-            <i style={{ background: chartColors[index] }} />
-            <span>{item.label}</span>
-            <strong>{item.display}</strong>
-          </div>
-        ))}
+      <div className="skeletonOverview">
+        <div className="skeletonLine skeletonPanelTitle" />
+        <div className="skeletonChart" />
       </div>
-    </div>
-  );
-}
-
-function RankingBars({ ranking }: { ranking: DepartmentDashboard["ranking"] }) {
-  const maximum = Math.max(...ranking.items.map((item) => item.value), 1);
-
-  return (
-    <div className="rankingBars">
-      {ranking.items.map((item) => (
-        <div className="rankingRow" key={item.label}>
-          <div>
-            <span>{item.label}</span>
-            <strong>{item.display}</strong>
-          </div>
-          <div className="rankingTrack"><i style={{ width: `${Math.max((item.value / maximum) * 100, 4)}%` }} /></div>
-        </div>
-      ))}
-    </div>
+      <span className="srOnly">Loading city service information…</span>
+    </main>
   );
 }
 
@@ -393,8 +411,12 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
     <div className={`reportDashboard${forceMaintenance ? " maintenanceMode" : ""}`}>
       <header className="reportTopbar">
         <div className="reportBrand">
-          <strong>Mabuhay, Carmela!</strong>
-          <span>San Pablo City</span>
+          <img src="/san-pablo-city-seal.png" alt="" />
+          <div>
+            <span>City Government of San Pablo</span>
+            <strong>Mabuhay, Carmela!</strong>
+            <small>Mayor&apos;s Dashboard</small>
+          </div>
         </div>
         <div className="reportHeaderActions">
           {dataState === "loading" && (
@@ -504,11 +526,12 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
         ))}
       </nav>
 
-      <main className="departmentReport" id="department-report" key={department.id} role="tabpanel">
+      {dataState === "loading" ? <DashboardSkeleton /> : <main className="departmentReport" id="department-report" key={department.id} role="tabpanel">
         <div className="reportHeading">
           <div>
             <span>{department.short}</span>
             <h1>{department.reportTitle}</h1>
+            <p>Essential information for today&apos;s executive review.</p>
           </div>
         </div>
 
@@ -533,10 +556,13 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
           ))}
         </section>
 
-        <section className="analyticsGrid" aria-label={`${department.short} analytics`}>
-          <article className={`analyticsPanel trendPanel${department.trend.periodTotals ? " trendPanelWithPeriods" : ""}`}>
+        <section className="mayorOverviewGrid" aria-label={`${department.short} overview`}>
+          <article className={`overviewChartCard${department.trend.periodTotals ? " trendPanelWithPeriods" : ""}`}>
             <div className={`panelHeading${department.trend.periodTotals ? " collectionHeading" : ""}`}>
-              <h2>{displayedTrend.title}</h2>
+              <div>
+                <span>Overview</span>
+                <h2>{displayedTrend.title}</h2>
+              </div>
               {department.trend.periodTotals ? (
                 <>
                   <div className="collectionPeriods" aria-label="Collection totals by period">
@@ -554,22 +580,40 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
                     ))}
                   </div>
                 </>
-              ) : <span>6 months</span>}
+              ) : <strong>6 months</strong>}
             </div>
             <TrendChart trend={displayedTrend} />
           </article>
 
-          <article className="analyticsPanel distributionPanel">
-            <div className="panelHeading"><h2>{department.distribution.title}</h2></div>
-            <DistributionChart distribution={department.distribution} />
-          </article>
-
-          <article className="analyticsPanel rankingPanel">
-            <div className="panelHeading"><h2>{department.ranking.title}</h2></div>
-            <RankingBars ranking={department.ranking} />
-          </article>
+          <aside className="decisionSummaryCard" aria-label="Executive summary">
+            <div className="decisionSummaryHeading">
+              <span>At a glance</span>
+              <strong>{department.distribution.centerValue}</strong>
+              <small>{department.distribution.centerLabel}</small>
+            </div>
+            <div className="snapshotList">
+              {department.distribution.items.map((item, index) => (
+                <div key={item.label}>
+                  <i style={{ background: ["#17856a", "#ef6b3a", "#f2a7b8", "#9dcfb9"][index] ?? "#9dcfb9" }} />
+                  <span>{item.label}</span>
+                  <strong>{item.display}</strong>
+                </div>
+              ))}
+            </div>
+            {department.ranking.items.length > 0 && (
+              <div className="prioritySummary">
+                <span>{department.ranking.title}</span>
+                {department.ranking.items.slice(0, 3).map((item) => (
+                  <div key={item.label}>
+                    <p>{item.label}</p>
+                    <strong>{item.display}</strong>
+                  </div>
+                ))}
+              </div>
+            )}
+          </aside>
         </section>
-      </main>
+      </main>}
 
       {selectedMetric?.details && (
         <div className="metricOverlay" onMouseDown={(event) => event.target === event.currentTarget && setSelectedMetric(null)}>
