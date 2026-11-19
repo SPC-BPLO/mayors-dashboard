@@ -547,7 +547,11 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
         onClick={() => setDepartmentNavOpen((open) => !open)}
         type="button"
       >
-        <Icon name="arrow" size={18} />
+        <span className="departmentNavToggleIcon" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </span>
       </button>
 
       {departmentNavOpen && (
@@ -566,7 +570,9 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
         role="tablist"
       >
         <div className="departmentNavHeading">
+          <span>San Pablo City</span>
           <strong>City services</strong>
+          <small>Select a department</small>
         </div>
         {departments.map((item) => (
           <button
