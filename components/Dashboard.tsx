@@ -628,7 +628,9 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
           tabIndex={departmentNavOpen ? 0 : -1}
           type="button"
         >
-          <span aria-hidden="true"><i /><i /></span>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M7 7l10 10M17 7 7 17" />
+          </svg>
         </button>
         <div className="departmentNavHeading">
           <span>San Pablo City</span>

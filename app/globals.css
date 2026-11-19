@@ -2293,7 +2293,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   display:none;
 }
 .departmentNavHeading{
-  padding-right:52px;
+  padding-right:60px;
 }
 .departmentNavToggle{
   opacity:1;
@@ -2342,11 +2342,11 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   top:14px;
   right:14px;
   left:auto;
-  z-index:2;
+  z-index:5;
   display:grid;
-  width:40px;
-  height:40px;
-  min-height:40px;
+  width:44px;
+  height:44px;
+  min-height:44px;
   padding:0;
   flex:none;
   justify-content:center;
@@ -2358,6 +2358,8 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   border-radius:50%;
   box-shadow:none;
   opacity:0;
+  cursor:pointer;
+  touch-action:manipulation;
   transform:scale(.72) rotate(-16deg);
   transition:opacity .2s ease,transform .32s cubic-bezier(.2,.8,.2,1),background-color .2s ease;
 }
@@ -2372,24 +2374,18 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
 .departmentSwitcher .departmentNavClose:active{
   transform:scale(.92);
 }
-.departmentSwitcher .departmentNavClose span{
-  position:relative;
-  display:block;
-  width:18px;
-  height:18px;
+.departmentSwitcher .departmentNavClose svg{
+  width:20px;
+  height:20px;
+  overflow:visible;
+  pointer-events:none;
 }
-.departmentSwitcher .departmentNavClose i{
-  position:absolute;
-  top:8px;
-  left:0;
-  display:block;
-  width:18px;
-  height:2px;
-  background:currentColor;
-  border-radius:99px;
+.departmentSwitcher .departmentNavClose path{
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2.2;
+  stroke-linecap:round;
 }
-.departmentSwitcher .departmentNavClose i:first-child{transform:rotate(45deg)}
-.departmentSwitcher .departmentNavClose i:last-child{transform:rotate(-45deg)}
 .departmentSwitcher .departmentNavClose:focus-visible{
   outline:3px solid rgba(185,239,114,.52);
   outline-offset:3px;
@@ -2403,7 +2399,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   transform:none;
 }
 @media(max-width:660px){
-  .departmentSwitcher .departmentNavClose{top:12px;right:12px;width:38px;height:38px;min-height:38px}
+  .departmentSwitcher .departmentNavClose{top:12px;right:12px;width:44px;height:44px;min-height:44px}
 }
 @media(prefers-reduced-motion:reduce){
   .departmentSwitcher .departmentNavClose,
