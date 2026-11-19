@@ -916,9 +916,19 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
     transform:none;
     transition:none!important;
   }
-  .collectionPeriods button::before{display:none;transition:none}
-  .collectionPeriods button.active,
-  .collectionPeriods button:focus-visible{box-shadow:inset 0 -3px 0 #16876a}
+  .collectionPeriods button::before,
+  .collectionPeriods button.active::after{display:none;transition:none}
+  .collectionPeriods button.active{
+    color:#0b5947;
+    background:#dcece6;
+    border-color:#76a592;
+    box-shadow:none;
+  }
+  .collectionPeriods button:focus-visible{
+    outline:2px solid rgba(20,125,100,.36);
+    outline-offset:2px;
+    box-shadow:none;
+  }
 }
 .liveDataNotice.error{border-left-color:#b77a28}
 @keyframes liveNoticeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
