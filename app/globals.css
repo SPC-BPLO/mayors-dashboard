@@ -2191,16 +2191,18 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
     gap:8px;
     border-radius:16px;
   }
-  .reportBrand{min-width:0;gap:8px}
+  .reportBrand{min-width:0;flex:1 1 auto;gap:8px}
   .reportBrand>img{width:36px;height:36px}
-  .reportBrand>div{min-width:0}
+  .reportBrand>div{min-width:0;flex:1 1 auto}
   .reportBrand>div>strong{
-    overflow:hidden;
-    max-width:100%;
-    font-size:clamp(19px,6vw,23px);
-    line-height:1.08;
-    text-overflow:ellipsis;
-    white-space:nowrap;
+    display:block;
+    overflow:visible;
+    max-width:11.5em;
+    font-size:clamp(18px,5vw,21px);
+    line-height:1.05;
+    text-overflow:clip;
+    text-wrap:balance;
+    white-space:normal;
   }
   .reportBrand>div>small{font-size:9px;line-height:1.25}
   .reportHeaderActions{gap:5px}
@@ -2445,8 +2447,17 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
     font-weight:700;
     line-height:1;
   }
+  .dashboardRefreshButton.refreshing{
+    width:38px;
+    min-width:38px;
+    padding:0;
+  }
+  .dashboardRefreshButton.refreshing span{display:none}
 }
 @media(max-width:380px){
+  .reportBrand{gap:6px}
+  .reportBrand>img{width:32px;height:32px}
+  .reportBrand>div>strong{font-size:17px}
   .dashboardRefreshButton{
     min-width:76px;
     padding:0 8px;
