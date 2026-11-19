@@ -2115,6 +2115,9 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
     inset 0 1px 0 rgba(255,255,255,.2);
   backdrop-filter:blur(30px) saturate(145%);
   -webkit-backdrop-filter:blur(30px) saturate(145%);
+  overscroll-behavior:contain;
+  touch-action:pan-y;
+  -webkit-overflow-scrolling:touch;
 }
 .departmentSwitcher button:not(.active){
   background:rgba(255,255,255,.075);
@@ -2163,4 +2166,123 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
     height:42px;
     border-radius:13px;
   }
+}
+
+/* Final mobile layout: left-aligned department boards with deliberate spacing. */
+.reportHeading::after,
+.selectedMonthStat::before{
+  display:none;
+}
+@media(max-width:660px){
+  .reportTopbar{
+    min-height:78px;
+    margin:6px 6px 0;
+    padding:10px 10px 10px 62px;
+    gap:8px;
+    border-radius:16px;
+  }
+  .reportBrand{min-width:0;gap:8px}
+  .reportBrand>img{width:36px;height:36px}
+  .reportBrand>div{min-width:0}
+  .reportBrand>div>strong{
+    overflow:hidden;
+    max-width:100%;
+    font-size:clamp(19px,6vw,23px);
+    line-height:1.08;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .reportBrand>div>small{font-size:9px;line-height:1.25}
+  .reportHeaderActions{gap:5px}
+  .dashboardRefreshButton{
+    width:38px;
+    height:38px;
+    min-height:38px;
+    padding:0;
+    border-radius:11px;
+  }
+  .dashboardRefreshButton span{display:none}
+  .departmentNavToggle,
+  .departmentNavToggle.open{
+    top:25px;
+    left:16px;
+    width:38px;
+    height:38px;
+    border-radius:12px;
+  }
+  .departmentSwitcher button,
+  .departmentSwitcher button:hover,
+  .departmentSwitcher button.active{
+    justify-content:flex-start;
+    flex-direction:row;
+    text-align:left;
+  }
+  .departmentSwitcher .departmentNavLabel{
+    justify-items:start;
+    text-align:left;
+  }
+  .departmentReport,
+  .dashboardSkeleton{padding:14px 10px 26px}
+  .reportHeading{
+    align-items:flex-start;
+    justify-content:center;
+    flex-direction:column;
+    gap:2px;
+    min-height:84px;
+    margin-bottom:8px;
+    padding:14px 15px;
+    border-radius:16px;
+    text-align:left;
+  }
+  .reportHeading>div{
+    width:100%;
+    justify-items:start;
+    text-align:left;
+  }
+  .reportHeading::before{top:-70px;right:-54px;opacity:.12}
+  .reportHeading h1{
+    max-width:100%;
+    font-size:23px;
+    line-height:1.14;
+  }
+  .reportHeading span{font-size:10px}
+  .reportMetrics,
+  .reportMetrics.metrics-3{gap:8px}
+  .reportMetrics article,
+  .reportMetrics article:hover,
+  .reportMetrics.metrics-3 article{
+    grid-template-rows:auto 2.5em;
+    min-height:88px;
+    padding:11px 12px;
+    border-radius:14px;
+  }
+  .reportMetrics article>strong{font-size:clamp(25px,7vw,31px)}
+  .reportMetrics article>span{
+    min-height:2.5em;
+    margin-top:6px;
+    font-size:11px;
+    line-height:1.25;
+  }
+  .mayorOverviewGrid{gap:8px;margin-top:8px}
+  .overviewChartCard,
+  .decisionSummaryCard{border-radius:16px}
+  .overviewChartCard{padding:12px}
+  .overviewChartCard .panelHeading{
+    gap:6px;
+    padding-bottom:0;
+    border-bottom:0;
+  }
+  .overviewChartCard .panelHeading h2{font-size:16px}
+  .overviewChartCard .trendChart{margin-top:6px;padding-top:2px}
+  .selectedMonthStatSlot{min-height:72px;margin:8px 0 0}
+  .selectedMonthStatSlot .selectedMonthStat,
+  .selectedMonthPrompt{min-height:72px}
+  .selectedMonthStat{padding:10px 12px}
+  .selectedMonthPrompt{padding:11px 13px;border-style:solid}
+  .monthStatPicker{gap:6px;margin-top:8px}
+  .monthStatPicker button{min-height:40px;padding:7px 8px}
+  .decisionSummaryCard{gap:12px;padding:13px}
+  .decisionSummaryHeading{padding-bottom:0;border-bottom:0}
+  .snapshotList{gap:8px}
+  .prioritySummary{gap:7px;padding-top:0;border-top:0}
 }
