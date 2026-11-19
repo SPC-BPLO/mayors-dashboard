@@ -534,7 +534,6 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
           <div>
             <span>City Government of San Pablo</span>
             <strong>Mabuhay, Carmela!</strong>
-            <small>Executive Overview</small>
           </div>
         </div>
         <div className="reportHeaderActions">
