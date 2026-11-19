@@ -2286,3 +2286,126 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .snapshotList{gap:8px}
   .prioritySummary{gap:7px;padding-top:0;border-top:0}
 }
+
+/* Final interaction cleanup: flat department board, clear menu close control,
+   and a conventional CTO month selection state. */
+.reportHeading::before{
+  display:none;
+}
+.departmentNavHeading{
+  padding-right:52px;
+}
+.departmentNavToggle{
+  opacity:1;
+  transition:opacity .2s ease,transform .26s cubic-bezier(.2,.8,.2,1),background-color .2s ease,border-color .2s ease;
+}
+.departmentNavToggleIcon{
+  position:relative;
+  display:block;
+  width:20px;
+  height:16px;
+}
+.departmentNavToggleIcon i,
+.departmentNavToggleIcon i:nth-child(1),
+.departmentNavToggleIcon i:nth-child(2),
+.departmentNavToggleIcon i:nth-child(3){
+  position:absolute;
+  left:50%;
+  width:20px;
+  height:2px;
+  margin:0;
+  background:#fff;
+  border-radius:99px;
+  transform:translateX(-50%);
+  transform-origin:center;
+  transition:transform .28s cubic-bezier(.2,.75,.2,1),opacity .18s ease;
+}
+.departmentNavToggleIcon i:nth-child(1){
+  top:7px;
+  transform:translateX(-50%) translateY(-6px);
+}
+.departmentNavToggleIcon i:nth-child(2){
+  top:7px;
+  transform:translateX(-50%);
+}
+.departmentNavToggleIcon i:nth-child(3){
+  top:7px;
+  transform:translateX(-50%) translateY(6px);
+}
+.departmentNavToggle.isHidden{
+  opacity:0;
+  pointer-events:none;
+  transform:scale(.82);
+}
+.departmentSwitcher .departmentNavClose{
+  position:absolute;
+  top:14px;
+  right:14px;
+  left:auto;
+  z-index:2;
+  display:grid;
+  width:40px;
+  height:40px;
+  min-height:40px;
+  padding:0;
+  flex:none;
+  justify-content:center;
+  place-items:center;
+  text-align:center;
+  color:#fff;
+  background:rgba(7,43,35,.86);
+  border:1px solid rgba(255,255,255,.3);
+  border-radius:50%;
+  box-shadow:none;
+  opacity:0;
+  transform:scale(.72) rotate(-16deg);
+  transition:opacity .2s ease,transform .32s cubic-bezier(.2,.8,.2,1),background-color .2s ease;
+}
+.departmentSwitcher.open .departmentNavClose{
+  opacity:1;
+  transform:scale(1) rotate(0);
+  transition-delay:.12s;
+}
+.departmentSwitcher .departmentNavClose:hover{
+  background:rgba(20,107,85,.96);
+}
+.departmentSwitcher .departmentNavClose:active{
+  transform:scale(.92);
+}
+.departmentSwitcher .departmentNavClose span{
+  position:relative;
+  display:block;
+  width:18px;
+  height:18px;
+}
+.departmentSwitcher .departmentNavClose i{
+  position:absolute;
+  top:8px;
+  left:0;
+  display:block;
+  width:18px;
+  height:2px;
+  background:currentColor;
+  border-radius:99px;
+}
+.departmentSwitcher .departmentNavClose i:first-child{transform:rotate(45deg)}
+.departmentSwitcher .departmentNavClose i:last-child{transform:rotate(-45deg)}
+.departmentSwitcher .departmentNavClose:focus-visible{
+  outline:3px solid rgba(185,239,114,.52);
+  outline-offset:3px;
+}
+.collectionTrendChart .monthStatPicker button.active,
+.collectionTrendChart .monthStatPicker button.active:hover{
+  color:var(--brand-forest);
+  background:#fff;
+  border:2px solid rgba(13,79,61,.55);
+  box-shadow:none;
+  transform:none;
+}
+@media(max-width:660px){
+  .departmentSwitcher .departmentNavClose{top:12px;right:12px;width:38px;height:38px;min-height:38px}
+}
+@media(prefers-reduced-motion:reduce){
+  .departmentSwitcher .departmentNavClose,
+  .departmentNavToggle.isHidden{transition:none}
+}

@@ -162,10 +162,26 @@ async function bploDashboard(): Promise<DepartmentDashboard> {
     name: "Franchise",
     reportTitle: "Franchise records",
     metrics: [
-      { label: "Active franchises", value: formatCount(active) },
-      { label: "Expiring in 30 days", value: formatCount(expiring) },
-      { label: "MTOPs due for revocation", value: formatCount(due) },
-      { label: "MTOP slots available", value: formatCount(available) },
+      { label: "Active franchises", value: formatCount(active), details: [
+        { label: "Expiring in 30 days", value: formatCount(expiring) },
+        { label: "Due for revocation", value: formatCount(due) },
+        { label: "MTOP slots available", value: formatCount(available) },
+      ] },
+      { label: "Expiring in 30 days", value: formatCount(expiring), details: [
+        { label: "Active franchises", value: formatCount(active) },
+        { label: "Due for revocation", value: formatCount(due) },
+        { label: "MTOP slots available", value: formatCount(available) },
+      ] },
+      { label: "MTOPs due for revocation", value: formatCount(due), details: [
+        { label: "Active franchises", value: formatCount(active) },
+        { label: "Expiring in 30 days", value: formatCount(expiring) },
+        { label: "MTOP slots available", value: formatCount(available) },
+      ] },
+      { label: "MTOP slots available", value: formatCount(available), details: [
+        { label: "Active franchises", value: formatCount(active) },
+        { label: "MTOP slots used", value: formatCount(summary.used_mtops) },
+        { label: "Due for revocation", value: formatCount(due) },
+      ] },
     ],
     trend: {
       title: "New franchise activity",
@@ -237,9 +253,21 @@ async function ctmoDashboard(): Promise<DepartmentDashboard> {
     name: "Traffic Violations",
     reportTitle: "Traffic violation records",
     metrics: [
-      { label: "Violations recorded", value: formatCount(total) },
-      { label: "Tickets settled", value: formatCount(settled) },
-      { label: "Repeat offenders", value: formatCount(repeat) },
+      { label: "Violations recorded", value: formatCount(total), details: [
+        { label: "Tickets settled", value: formatCount(settled) },
+        { label: "Tickets unsettled", value: formatCount(unresolved) },
+        { label: "Repeat offenders", value: formatCount(repeat) },
+      ] },
+      { label: "Tickets settled", value: formatCount(settled), details: [
+        { label: "Violations recorded", value: formatCount(total) },
+        { label: "Tickets unsettled", value: formatCount(unresolved) },
+        { label: "Repeat offenders", value: formatCount(repeat) },
+      ] },
+      { label: "Repeat offenders", value: formatCount(repeat), details: [
+        { label: "Violations recorded", value: formatCount(total) },
+        { label: "Tickets settled", value: formatCount(settled) },
+        { label: "Tickets unsettled", value: formatCount(unresolved) },
+      ] },
     ],
     trend: {
       title: "Monthly violation trend",

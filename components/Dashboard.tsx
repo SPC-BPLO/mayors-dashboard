@@ -19,10 +19,22 @@ const fullMonthNames: Record<string, string> = {
   nov: "November",
   dec: "December",
 };
+
+function placeholderMetrics(labels: string[]) {
+  return labels.map((label) => ({
+    label,
+    value: "—",
+    details: labels
+      .filter((detailLabel) => detailLabel !== label)
+      .slice(0, 3)
+      .map((detailLabel) => ({ label: detailLabel, value: "—" })),
+  }));
+}
+
 const emptyDepartments: DepartmentDashboard[] = [
-  { id: "bplo", short: "BPLO", name: "Franchise", reportTitle: "Franchise records", metrics: ["Active franchises", "Expiring in 30 days", "MTOPs due for revocation", "MTOP slots available"].map((label) => ({ label, value: "—" })), trend: { title: "Active franchise trend", labels: monthLabels, values: [0, 0, 0, 0, 0, 0] }, distribution: { title: "Franchise status", centerValue: "—", centerLabel: "records", items: [] }, ranking: { title: "Key franchise records", items: [] } },
-  { id: "ctmo", short: "CTMO", name: "Traffic Violations", reportTitle: "Traffic violation records", metrics: ["Violations recorded", "Tickets settled", "Repeat offenders"].map((label) => ({ label, value: "—" })), trend: { title: "Monthly violation trend", labels: monthLabels, values: [0, 0, 0, 0, 0, 0] }, distribution: { title: "Ticket resolution", centerValue: "—", centerLabel: "tickets", items: [] }, ranking: { title: "Most recorded violations", items: [] } },
-  { id: "cto", short: "CTO", name: "Finance–Cashier", reportTitle: "Finance and collections", metrics: ["Violation collection today", "Tickets settled today", "Franchise collections", "Franchise transactions"].map((label) => ({ label, value: "—" })), trend: { title: "Violation-fee collections", labels: monthLabels, values: [0, 0, 0, 0, 0, 0], valueSuffix: "K" }, distribution: { title: "Average daily ticket activity", centerValue: "—", centerLabel: "tickets/day", items: [] }, ranking: { title: "Average daily collections by category", items: [] } },
+  { id: "bplo", short: "BPLO", name: "Franchise", reportTitle: "Franchise records", metrics: placeholderMetrics(["Active franchises", "Expiring in 30 days", "MTOPs due for revocation", "MTOP slots available"]), trend: { title: "Active franchise trend", labels: monthLabels, values: [0, 0, 0, 0, 0, 0] }, distribution: { title: "Franchise status", centerValue: "—", centerLabel: "records", items: [] }, ranking: { title: "Key franchise records", items: [] } },
+  { id: "ctmo", short: "CTMO", name: "Traffic Violations", reportTitle: "Traffic violation records", metrics: placeholderMetrics(["Violations recorded", "Tickets settled", "Repeat offenders"]), trend: { title: "Monthly violation trend", labels: monthLabels, values: [0, 0, 0, 0, 0, 0] }, distribution: { title: "Ticket resolution", centerValue: "—", centerLabel: "tickets", items: [] }, ranking: { title: "Most recorded violations", items: [] } },
+  { id: "cto", short: "CTO", name: "Finance–Cashier", reportTitle: "Finance and collections", metrics: placeholderMetrics(["Violation collection today", "Tickets settled today", "Franchise collections", "Franchise transactions"]), trend: { title: "Violation-fee collections", labels: monthLabels, values: [0, 0, 0, 0, 0, 0], valueSuffix: "K" }, distribution: { title: "Average daily ticket activity", centerValue: "—", centerLabel: "tickets/day", items: [] }, ranking: { title: "Average daily collections by category", items: [] } },
 ];
 
 const maintenanceResumeAt = new Date("2026-11-16T17:00:00+08:00");
@@ -76,7 +88,7 @@ function createSmoothPath(points: Array<{ x: number; y: number }>) {
   }, `M ${points[0].x} ${points[0].y}`);
 }
 
-function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
+function TrendChart({ trend, departmentId }: { trend: DepartmentDashboard["trend"]; departmentId: DepartmentId }) {
   const [selectedPoint, setSelectedPoint] = useState<number | null>(null);
   const [compactChart, setCompactChart] = useState(false);
   const width = compactChart ? 420 : 640;
@@ -114,10 +126,10 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
   const selectedComparison = selectedPoint === null
     ? ""
     : selectedDifference === null
-    ? "Starting month in this view"
+    ? "First month in this view"
     : selectedDifference === 0
       ? `No change from ${formatFullMonthName(trend.labels[selectedPoint - 1])}`
-      : `${formatTrendValue(Math.abs(selectedDifference), trend.valueSuffix)} ${selectedDifference > 0 ? "higher" : "lower"} than ${formatFullMonthName(trend.labels[selectedPoint - 1])}`;
+      : `${selectedDifference > 0 ? "Up" : "Down"} ${formatTrendValue(Math.abs(selectedDifference), trend.valueSuffix)} from ${formatFullMonthName(trend.labels[selectedPoint - 1])}`;
   const selectedCalloutX = activePoint ? Math.min(Math.max(activePoint.x, 82), width - 82) : 82;
   const selectedCalloutY = activePoint ? Math.max(activePoint.y - 62, 5) : 5;
 
@@ -139,7 +151,7 @@ function TrendChart({ trend }: { trend: DepartmentDashboard["trend"] }) {
   }, []);
 
   return (
-    <div className="trendChart" aria-label={`${trend.title}: ${trend.values.join(", ")}`}>
+    <div className={`trendChart${departmentId === "cto" ? " collectionTrendChart" : ""}`} aria-label={`${trend.title}: ${trend.values.join(", ")}`}>
       {trend.labels.length <= 8 && (
         <div className="selectedMonthStatSlot" aria-live="polite">
           {activePoint && selectedLabel ? (
@@ -579,9 +591,11 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
       <button
         aria-controls="department-navigation"
         aria-expanded={departmentNavOpen}
-        aria-label={departmentNavOpen ? "Close department navigation" : "Open department navigation"}
-        className={`departmentNavToggle${departmentNavOpen ? " open" : ""}`}
-        onClick={() => setDepartmentNavOpen((open) => !open)}
+        aria-hidden={departmentNavOpen}
+        aria-label="Open department navigation"
+        className={`departmentNavToggle${departmentNavOpen ? " isHidden" : ""}`}
+        onClick={() => setDepartmentNavOpen(true)}
+        tabIndex={departmentNavOpen ? -1 : 0}
         type="button"
       >
         <span className="departmentNavToggleIcon" aria-hidden="true">
@@ -606,6 +620,16 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
         aria-label="City services"
         role="tablist"
       >
+        <button
+          aria-hidden={!departmentNavOpen}
+          aria-label="Close department navigation"
+          className="departmentNavClose"
+          onClick={() => setDepartmentNavOpen(false)}
+          tabIndex={departmentNavOpen ? 0 : -1}
+          type="button"
+        >
+          <span aria-hidden="true"><i /><i /></span>
+        </button>
         <div className="departmentNavHeading">
           <span>San Pablo City</span>
           <strong>City services</strong>
@@ -650,6 +674,7 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
         <section className={`reportMetrics metrics-${department.metrics.length}${department.id === "cto" ? " compactMetrics" : ""}`} aria-label={`${department.short} summary statistics`}>
           {department.metrics.map((metric) => (
             <article
+              aria-label={metric.details ? `View brief overview for ${metric.label}` : undefined}
               className={metric.details ? "interactiveMetric" : undefined}
               key={metric.label}
               onClick={() => metric.details && setSelectedMetric(metric)}
@@ -694,7 +719,7 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
                 </>
               ) : <strong>6 months</strong>}
             </div>
-            <TrendChart trend={displayedTrend} />
+            <TrendChart departmentId={department.id} trend={displayedTrend} />
           </article>
 
           <aside className="decisionSummaryCard" aria-label="Executive summary">
@@ -731,7 +756,7 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
         <div className="metricOverlay" onMouseDown={(event) => event.target === event.currentTarget && setSelectedMetric(null)}>
           <section aria-labelledby="metric-dialog-title" aria-modal="true" className="metricDialog" role="dialog">
             <button aria-label="Close details" className="metricDialogClose" onClick={() => setSelectedMetric(null)} type="button">×</button>
-            <span>CTO Finance–Cashier</span>
+            <span>{department.short} {department.name}</span>
             <h2 id="metric-dialog-title">{selectedMetric.label}</h2>
             <strong><MetricValue value={selectedMetric.value} /></strong>
             <div className="metricDetailGrid">
