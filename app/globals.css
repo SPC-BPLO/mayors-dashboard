@@ -2409,3 +2409,31 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .departmentSwitcher .departmentNavClose,
   .departmentNavToggle.isHidden{transition:none}
 }
+
+/* Keep the refresh action explicit on mobile. */
+@media(max-width:660px){
+  .dashboardRefreshButton{
+    width:auto;
+    min-width:84px;
+    height:38px;
+    min-height:38px;
+    padding:0 11px;
+    gap:6px;
+    flex:none;
+    font-size:13px;
+  }
+  .dashboardRefreshButton span{
+    display:inline;
+    font-size:13px;
+    font-weight:700;
+    line-height:1;
+  }
+}
+@media(max-width:380px){
+  .dashboardRefreshButton{
+    min-width:76px;
+    padding:0 8px;
+    gap:4px;
+  }
+  .dashboardRefreshButton span{font-size:12px}
+}

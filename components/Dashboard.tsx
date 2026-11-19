@@ -724,7 +724,6 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
 
           <aside className="decisionSummaryCard" aria-label="Executive summary">
             <div className="decisionSummaryHeading">
-              <span>At a glance</span>
               <strong>{department.distribution.centerValue}</strong>
               <small>{department.distribution.centerLabel}</small>
             </div>
