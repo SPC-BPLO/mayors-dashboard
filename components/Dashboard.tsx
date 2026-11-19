@@ -614,24 +614,26 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
         />
       )}
 
+      <button
+        aria-controls="department-navigation"
+        aria-hidden={!departmentNavOpen}
+        aria-label="Close department navigation"
+        className={`departmentNavClose${departmentNavOpen ? " open" : ""}`}
+        onClick={() => setDepartmentNavOpen(false)}
+        tabIndex={departmentNavOpen ? 0 : -1}
+        type="button"
+      >
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M7 7l10 10M17 7 7 17" />
+        </svg>
+      </button>
+
       <nav
         className={`departmentSwitcher${departmentNavOpen ? " open" : ""}`}
         id="department-navigation"
         aria-label="City services"
         role="tablist"
       >
-        <button
-          aria-hidden={!departmentNavOpen}
-          aria-label="Close department navigation"
-          className="departmentNavClose"
-          onClick={() => setDepartmentNavOpen(false)}
-          tabIndex={departmentNavOpen ? 0 : -1}
-          type="button"
-        >
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M7 7l10 10M17 7 7 17" />
-          </svg>
-        </button>
         <div className="departmentNavHeading">
           <span>San Pablo City</span>
           <strong>City services</strong>

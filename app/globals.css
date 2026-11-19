@@ -2337,12 +2337,11 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   pointer-events:none;
   transform:scale(.82);
 }
-.departmentSwitcher .departmentNavClose{
-  position:absolute;
-  top:14px;
-  right:14px;
-  left:auto;
-  z-index:5;
+.departmentNavClose{
+  position:fixed;
+  top:90px;
+  left:calc(min(290px,86vw) - 58px);
+  z-index:72;
   display:grid;
   width:44px;
   height:44px;
@@ -2358,35 +2357,44 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   border-radius:50%;
   box-shadow:none;
   opacity:0;
+  visibility:hidden;
+  pointer-events:none;
   cursor:pointer;
   touch-action:manipulation;
-  transform:scale(.72) rotate(-16deg);
-  transition:opacity .2s ease,transform .32s cubic-bezier(.2,.8,.2,1),background-color .2s ease;
+  transform:translateX(calc(0px - min(290px,86vw) - 24px));
+  transition:
+    transform .42s cubic-bezier(.2,.78,.2,1),
+    opacity .18s ease .08s,
+    background-color .2s ease,
+    visibility 0s linear .42s;
 }
-.departmentSwitcher.open .departmentNavClose{
+.departmentNavClose.open{
   opacity:1;
-  transform:scale(1) rotate(0);
-  transition-delay:.12s;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translateX(0);
+  transition-delay:0s,.08s,0s,0s;
 }
-.departmentSwitcher .departmentNavClose:hover{
+.departmentNavClose:hover{
   background:rgba(20,107,85,.96);
 }
-.departmentSwitcher .departmentNavClose:active{
-  transform:scale(.92);
+.departmentNavClose:active{
+  background:rgba(7,43,35,.98);
+  transform:translateX(0);
 }
-.departmentSwitcher .departmentNavClose svg{
+.departmentNavClose svg{
   width:20px;
   height:20px;
   overflow:visible;
   pointer-events:none;
 }
-.departmentSwitcher .departmentNavClose path{
+.departmentNavClose path{
   fill:none;
   stroke:currentColor;
   stroke-width:2.2;
   stroke-linecap:round;
 }
-.departmentSwitcher .departmentNavClose:focus-visible{
+.departmentNavClose:focus-visible{
   outline:3px solid rgba(185,239,114,.52);
   outline-offset:3px;
 }
@@ -2399,10 +2407,13 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   transform:none;
 }
 @media(max-width:660px){
-  .departmentSwitcher .departmentNavClose{top:12px;right:12px;width:44px;height:44px;min-height:44px}
+  .departmentNavClose{top:88px}
+}
+@media(min-width:761px){
+  .departmentNavClose{top:96px;left:232px}
 }
 @media(prefers-reduced-motion:reduce){
-  .departmentSwitcher .departmentNavClose,
+  .departmentNavClose,
   .departmentNavToggle.isHidden{transition:none}
 }
 
