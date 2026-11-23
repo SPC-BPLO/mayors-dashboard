@@ -2304,6 +2304,49 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
 .reportHeading::before{
   display:none;
 }
+
+/* Keep the summary cards visibly actionable on both pointer and touch screens. */
+.reportMetrics article.interactiveMetric{
+  position:relative;
+  padding-top:40px;
+  cursor:pointer;
+}
+.metricCardCue{
+  position:absolute;
+  top:11px;
+  right:12px;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:4px 7px;
+  color:var(--brand-forest);
+  background:rgba(185,239,114,.42);
+  border:1px solid rgba(13,79,61,.12);
+  border-radius:999px;
+  font-size:8px;
+  font-weight:800;
+  line-height:1;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  transition:background-color .2s ease,transform .2s ease;
+}
+.metricCardCue .icon{flex:none}
+.reportMetrics article.interactiveMetric:hover .metricCardCue,
+.reportMetrics article.interactiveMetric:focus-visible .metricCardCue{
+  background:rgba(185,239,114,.72);
+  transform:translateX(2px);
+}
+@media(max-width:660px){
+  .reportMetrics article.interactiveMetric,
+  .reportMetrics article.interactiveMetric:hover{
+    min-height:100px;
+    padding-top:39px;
+  }
+  .metricCardCue{top:9px;right:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .metricCardCue{transition:none}
+}
 .departmentNavHeading{
   padding-right:60px;
 }
@@ -2468,4 +2511,29 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
 @media(max-width:340px){
   .reportBrand>img{display:none}
   .dashboardRefreshButton{min-width:68px}
+}
+
+/* Neutral card palette: remove pale-lime card highlights without losing hierarchy. */
+.reportMetrics article:first-child,
+.reportMetrics article:first-child:hover,
+.overviewChartCard,
+.decisionSummaryCard{
+  background:rgba(252,254,253,.72);
+  border-color:rgba(255,255,255,.9);
+}
+.selectedMonthStat{
+  background:rgba(250,252,251,.78);
+  border-color:rgba(13,79,61,.14);
+}
+.metricCardCue,
+.reportMetrics article.interactiveMetric:hover .metricCardCue,
+.reportMetrics article.interactiveMetric:focus-visible .metricCardCue{
+  color:var(--brand-forest);
+  background:rgba(244,247,245,.92);
+  border-color:rgba(13,79,61,.14);
+}
+.departmentSwitcher button.active{
+  color:var(--brand-forest-deep);
+  background:rgba(250,253,251,.95);
+  border-color:rgba(255,255,255,.86);
 }

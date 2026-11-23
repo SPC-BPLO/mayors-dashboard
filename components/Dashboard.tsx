@@ -690,6 +690,12 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
               role={metric.details ? "button" : undefined}
               tabIndex={metric.details ? 0 : undefined}
             >
+              {metric.details && (
+                <small className="metricCardCue" aria-hidden="true">
+                  View details
+                  <Icon name="arrow" size={13} />
+                </small>
+              )}
               <strong><MetricValue value={metric.value} /></strong>
               <span>{metric.label}</span>
             </article>
