@@ -2339,10 +2339,12 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   transform:translateX(2px);
 }
 @media(max-width:660px){
-  .reportMetrics article.interactiveMetric,
-  .reportMetrics article.interactiveMetric:hover{
+  .reportMetrics.metrics-3 article.interactiveMetric,
+  .reportMetrics.metrics-3 article.interactiveMetric:hover,
+  .reportMetrics.metrics-4 article.interactiveMetric,
+  .reportMetrics.metrics-4 article.interactiveMetric:hover{
     min-height:100px;
-    padding-top:39px;
+    padding:39px 12px 11px;
   }
   .metricCardCue{top:9px;right:10px}
 }
