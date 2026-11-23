@@ -2537,3 +2537,9 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   background:rgba(250,253,251,.95);
   border-color:rgba(255,255,255,.86);
 }
+
+/* Avoid sticky desktop hover motion on touch screens. */
+@media(hover:none), (pointer:coarse){
+  .reportMetrics article.interactiveMetric:hover{transform:none}
+  .reportMetrics article.interactiveMetric:hover .metricCardCue{transform:none}
+}

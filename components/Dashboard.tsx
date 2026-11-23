@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "@/components/Icon";
 import type { DepartmentDashboard, DepartmentId, MayorDashboardResponse } from "@/lib/dashboard-types";
 
@@ -303,7 +303,16 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
   const [dataState, setDataState] = useState<"loading" | "ready" | "delayed" | "error">(
     forceMaintenance ? "error" : initialData ? "ready" : "loading",
   );
+  const metricTriggerRefs = useRef(new Map<string, HTMLElement>());
   const metricDialogOpen = Boolean(selectedMetric?.details);
+
+  const closeMetricDialog = () => {
+    const metricLabel = selectedMetric?.label;
+    setSelectedMetric(null);
+    if (metricLabel) {
+      window.requestAnimationFrame(() => metricTriggerRefs.current.get(metricLabel)?.focus());
+    }
+  };
 
   useEffect(() => {
     if (!departmentNavOpen) return;
@@ -491,7 +500,7 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
     body.style.overscrollBehavior = "none";
 
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelectedMetric(null);
+      if (event.key === "Escape") closeMetricDialog();
     };
     window.addEventListener("keydown", closeOnEscape);
 
@@ -677,6 +686,9 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
         <section className={`reportMetrics metrics-${department.metrics.length}${department.id === "cto" ? " compactMetrics" : ""}`} aria-label={`${department.short} summary statistics`}>
           {department.metrics.map((metric) => (
             <article
+              aria-controls={metric.details ? "metric-dialog" : undefined}
+              aria-expanded={metric.details ? selectedMetric?.label === metric.label : undefined}
+              aria-haspopup={metric.details ? "dialog" : undefined}
               aria-label={metric.details ? `View brief overview for ${metric.label}` : undefined}
               className={metric.details ? "interactiveMetric" : undefined}
               key={metric.label}
@@ -686,6 +698,10 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
                   event.preventDefault();
                   setSelectedMetric(metric);
                 }
+              }}
+              ref={(node) => {
+                if (node) metricTriggerRefs.current.set(metric.label, node);
+                else metricTriggerRefs.current.delete(metric.label);
               }}
               role={metric.details ? "button" : undefined}
               tabIndex={metric.details ? 0 : undefined}
@@ -761,9 +777,9 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
       </main>}
 
       {selectedMetric?.details && (
-        <div className="metricOverlay" onMouseDown={(event) => event.target === event.currentTarget && setSelectedMetric(null)}>
-          <section aria-labelledby="metric-dialog-title" aria-modal="true" className="metricDialog" role="dialog">
-            <button aria-label="Close details" className="metricDialogClose" onClick={() => setSelectedMetric(null)} type="button">×</button>
+        <div className="metricOverlay" onPointerDown={(event) => event.target === event.currentTarget && closeMetricDialog()}>
+          <section aria-labelledby="metric-dialog-title" aria-modal="true" className="metricDialog" id="metric-dialog" role="dialog">
+            <button aria-label="Close details" autoFocus className="metricDialogClose" onClick={closeMetricDialog} type="button">×</button>
             <span>{department.short} {department.name}</span>
             <h2 id="metric-dialog-title">{selectedMetric.label}</h2>
             <strong><MetricValue value={selectedMetric.value} /></strong>
