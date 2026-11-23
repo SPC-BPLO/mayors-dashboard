@@ -2049,13 +2049,13 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   transform:scale(.96);
 }
 .reportMetrics article.interactiveMetric{
-  transition:transform .24s cubic-bezier(.2,.75,.2,1),background-color .2s ease,border-color .2s ease;
+  transition:background-color .2s ease,border-color .2s ease;
 }
 .reportMetrics article.interactiveMetric:hover{
-  transform:translateY(-3px);
+  transform:none;
 }
 .reportMetrics article.interactiveMetric:active{
-  transform:scale(.985);
+  transform:none;
 }
 .monthStatPicker button,
 .collectionPeriods button{
