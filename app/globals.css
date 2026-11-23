@@ -2197,12 +2197,12 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .reportBrand>div>strong{
     display:block;
     overflow:visible;
-    max-width:11.5em;
-    font-size:clamp(18px,5vw,21px);
+    max-width:none;
+    font-size:clamp(16.5px,4.6vw,18px);
+    letter-spacing:-.035em;
     line-height:1.05;
     text-overflow:clip;
-    text-wrap:balance;
-    white-space:normal;
+    white-space:nowrap;
   }
   .reportBrand>div>small{font-size:9px;line-height:1.25}
   .reportHeaderActions{gap:5px}
@@ -2455,13 +2455,17 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   .dashboardRefreshButton.refreshing span{display:none}
 }
 @media(max-width:380px){
-  .reportBrand{gap:6px}
-  .reportBrand>img{width:32px;height:32px}
-  .reportBrand>div>strong{font-size:17px}
+  .reportBrand{gap:5px}
+  .reportBrand>img{width:30px;height:30px}
+  .reportBrand>div>strong{font-size:16px}
   .dashboardRefreshButton{
-    min-width:76px;
-    padding:0 8px;
+    min-width:72px;
+    padding:0 7px;
     gap:4px;
   }
   .dashboardRefreshButton span{font-size:12px}
+}
+@media(max-width:340px){
+  .reportBrand>img{display:none}
+  .dashboardRefreshButton{min-width:68px}
 }
