@@ -533,7 +533,7 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
           <img src="/san-pablo-city-seal.png" alt="" />
           <div>
             <span>City Government of San Pablo</span>
-            <strong>Mabuhay, Carmela!</strong>
+            <strong>Mabuhay, Mayora!</strong>
           </div>
         </div>
         <div className="reportHeaderActions">
