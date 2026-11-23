@@ -708,7 +708,6 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
             >
               {metric.details && (
                 <small className="metricCardCue" aria-hidden="true">
-                  View details
                   <Icon name="arrow" size={13} />
                 </small>
               )}

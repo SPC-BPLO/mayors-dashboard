@@ -2317,12 +2317,14 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
   right:12px;
   display:inline-flex;
   align-items:center;
-  gap:4px;
-  padding:4px 7px;
+  justify-content:center;
+  width:27px;
+  height:27px;
+  padding:0;
   color:var(--brand-forest);
   background:rgba(185,239,114,.42);
   border:1px solid rgba(13,79,61,.12);
-  border-radius:999px;
+  border-radius:50%;
   font-size:8px;
   font-weight:800;
   line-height:1;
