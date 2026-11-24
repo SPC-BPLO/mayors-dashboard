@@ -8,6 +8,7 @@ export async function proxy(request: NextRequest) {
   // Production is left unchanged until its separately deployed login origin is
   // explicitly configured. Local development is protected by default.
   if (!loginUrl) return NextResponse.next();
+  if (request.nextUrl.pathname === "/api/auth/callback") return NextResponse.next();
 
   try {
     const sessionResponse = await fetch(new URL("/api/auth/session", loginUrl), {
