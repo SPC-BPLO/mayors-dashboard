@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Script from "next/script";
+import { SessionHistoryGuard } from "@/components/SessionHistoryGuard";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -35,7 +37,20 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <head>
+        <Script id="dashboard-history-preflight" strategy="beforeInteractive">
+          {`(() => {
+            const navigation = performance.getEntriesByType("navigation")[0];
+            if (navigation && navigation.type === "back_forward") {
+              document.documentElement.dataset.historyNavigation = "true";
+            }
+          })();`}
+        </Script>
+      </head>
+      <body>
+        <SessionHistoryGuard />
+        {children}
+      </body>
     </html>
   );
 }

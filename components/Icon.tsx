@@ -1,4 +1,4 @@
-type IconName = "grid" | "building" | "gavel" | "check" | "waves" | "bank" | "store" | "map" | "car" | "file" | "menu" | "bell" | "refresh" | "shield" | "arrow" | "close" | "clock" | "minimize";
+type IconName = "grid" | "building" | "gavel" | "check" | "waves" | "bank" | "store" | "map" | "car" | "file" | "menu" | "bell" | "refresh" | "shield" | "arrow" | "close" | "clock" | "minimize" | "logout";
 
 const paths: Record<IconName, React.ReactNode> = {
   grid: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
@@ -19,6 +19,7 @@ const paths: Record<IconName, React.ReactNode> = {
   close: <path d="m6 6 12 12M18 6 6 18"/>,
   clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
   minimize: <path d="M5 17h14"/>,
+  logout: <><path d="M10 5H5v14h5"/><path d="M14 8l4 4-4 4M18 12H9"/></>,
 };
 
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {

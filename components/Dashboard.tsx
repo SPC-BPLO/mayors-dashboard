@@ -640,39 +640,46 @@ export function Dashboard({ initialData, forceMaintenance = false }: { initialDa
         className={`departmentSwitcher${departmentNavOpen ? " open" : ""}`}
         id="department-navigation"
         aria-label="City services"
-        role="tablist"
       >
         <div className="departmentNavHeading">
           <span>San Pablo City</span>
           <strong>City services</strong>
           <small>Select a department</small>
         </div>
-        {departments.map((item) => (
-          <button
-            aria-controls="department-report"
-            aria-selected={selectedDepartment === item.id}
-            className={selectedDepartment === item.id ? "active" : ""}
-            key={item.id}
-            onClick={() => {
-              setSelectedMetric(null);
-              setSelectedDepartment(item.id);
-              setDepartmentNavOpen(false);
-            }}
-            role="tab"
-            type="button"
-          >
-            <span className="departmentNavIcon">
-              <img
-                alt=""
-                src={item.id === "bplo" ? "/bplo_seal.png" : item.id === "ctmo" ? "/ctmo_seal.png" : "/cto_seal.png"}
-              />
-            </span>
-            <span className="departmentNavLabel">
-              <span>{item.short}</span>
-              <strong>{item.name}</strong>
-            </span>
+        <div className="departmentNavTabs" role="tablist" aria-label="City services">
+          {departments.map((item) => (
+            <button
+              aria-controls="department-report"
+              aria-selected={selectedDepartment === item.id}
+              className={selectedDepartment === item.id ? "active" : ""}
+              key={item.id}
+              onClick={() => {
+                setSelectedMetric(null);
+                setSelectedDepartment(item.id);
+                setDepartmentNavOpen(false);
+              }}
+              role="tab"
+              type="button"
+            >
+              <span className="departmentNavIcon">
+                <img
+                  alt=""
+                  src={item.id === "bplo" ? "/bplo_seal.png" : item.id === "ctmo" ? "/ctmo_seal.png" : "/cto_seal.png"}
+                />
+              </span>
+              <span className="departmentNavLabel">
+                <span>{item.short}</span>
+                <strong>{item.name}</strong>
+              </span>
+            </button>
+          ))}
+        </div>
+        <form action="/api/auth/logout" className="dashboardLogoutForm" method="post">
+          <button className="dashboardLogoutButton" type="submit">
+            <Icon name="logout" size={19} />
+            <span>Log out</span>
           </button>
-        ))}
+        </form>
       </nav>
 
       {dataState === "loading" ? <DashboardSkeleton /> : <main className="departmentReport" id="department-report" key={department.id} role="tabpanel">

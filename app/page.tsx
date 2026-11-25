@@ -3,7 +3,8 @@ import { getMayorDashboard } from "@/lib/dashboard-cache";
 
 // Render a recent live snapshot into the first response, then let the client
 // refresh it in the background after hydration.
-export const revalidate = 15;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function Home() {
   try {

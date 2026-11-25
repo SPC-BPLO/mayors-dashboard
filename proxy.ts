@@ -1,21 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const developmentLoginUrl = "http://localhost:4187";
+const productionLoginUrl = "https://mayors-dashboard-login.vercel.app";
 
 export async function proxy(request: NextRequest) {
-  const loginUrl = process.env.MAYOR_LOGIN_URL || (process.env.NODE_ENV === "development" ? developmentLoginUrl : "");
+  const loginUrl =
+    process.env.MAYOR_LOGIN_URL ||
+    (process.env.NODE_ENV === "development" ? developmentLoginUrl : productionLoginUrl);
 
-  // Production is left unchanged until its separately deployed login origin is
-  // explicitly configured. Local development is protected by default.
-  if (!loginUrl) return NextResponse.next();
-  if (request.nextUrl.pathname === "/api/auth/callback") return NextResponse.next();
+  if (
+    request.nextUrl.pathname === "/api/auth/callback" ||
+    request.nextUrl.pathname === "/api/auth/lock"
+  ) {
+    return NextResponse.next();
+  }
 
   try {
     const sessionResponse = await fetch(new URL("/api/auth/session", loginUrl), {
       cache: "no-store",
       headers: { cookie: request.headers.get("cookie") || "" },
     });
-    if (sessionResponse.ok) return NextResponse.next();
+    if (sessionResponse.ok) {
+      const response = NextResponse.next();
+      response.headers.set("Cache-Control", "private, no-store, no-cache, max-age=0, must-revalidate");
+      response.headers.set("Pragma", "no-cache");
+      response.headers.set("Expires", "0");
+      return response;
+    }
   } catch (error) {
     console.error("Unable to validate the Mayor's Dashboard session", error);
   }
